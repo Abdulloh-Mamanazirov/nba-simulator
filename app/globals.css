@@ -1,0 +1,349 @@
+@import "tailwindcss";
+
+/* ===========================
+   GOOGLE FONTS
+   =========================== */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap");
+
+/* ===========================
+   TAILWIND THEME EXTENSIONS
+   =========================== */
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Lora", ui-serif, Georgia, serif;
+}
+
+/* ===========================
+   DARK THEME (DEFAULT)
+   =========================== */
+:root {
+  --bg: #060b12;
+  --bg-card: #0c1525;
+  --bg-card-2: #101d30;
+  --bg-card-hover: #142540;
+  --border: #1a2d48;
+  --border-light: #243b5c;
+  --text: #e8eeff;
+  --text-muted: #5c7a99;
+  --text-dim: #3d5573;
+  --gold: #e8b55a;
+  --gold-dim: #b8923e;
+  --success: #48bb78;
+  --danger: #e53e3e;
+  --danger-dim: #c53030;
+
+  /* Chemical colors */
+  --chem-dopamine: #ff5722;
+  --chem-cortisol: #e53e3e;
+  --chem-oxytocin: #f6ad55;
+  --chem-gaba: #38d39f;
+  --chem-vasopressin: #63b3ed;
+  --chem-acetylcholine: #7f9cf5;
+  --chem-serotonin: #b794f4;
+  --chem-anandamide: #2cc4b0;
+  --chem-bdnf: #48bb78;
+  --chem-npy: #ecc94b;
+  --chem-allopregnanolone: #b67fea;
+  --chem-glymphatic: #76c4f0;
+}
+
+/* ===========================
+   LIGHT THEME
+   =========================== */
+[data-theme="light"] {
+  --bg: #f5f0eb;
+  --bg-card: #ffffff;
+  --bg-card-2: #f9f6f2;
+  --bg-card-hover: #f0ebe4;
+  --border: #d4c8b8;
+  --border-light: #e2d8cc;
+  --text: #1a1410;
+  --text-muted: #7a6e60;
+  --text-dim: #a69882;
+  --gold: #b88a2e;
+  --gold-dim: #9a7428;
+  --success: #2f8a56;
+  --danger: #c53030;
+  --danger-dim: #a02020;
+}
+
+/* ===========================
+   BASE STYLES
+   =========================== */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* ===========================
+   TYPOGRAPHY
+   =========================== */
+.font-serif {
+  font-family: "Lora", ui-serif, Georgia, serif;
+}
+
+/* ===========================
+   KEYFRAME ANIMATIONS
+   =========================== */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 1000px;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 600px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+
+@keyframes triPulse {
+  0%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.88;
+    filter: brightness(1.15);
+  }
+}
+
+@keyframes barRise {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes ringFill {
+  from {
+    stroke-dashoffset: var(--ring-circumference, 283);
+  }
+  to {
+    stroke-dashoffset: var(--ring-offset, 0);
+  }
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 8px var(--glow-color, transparent),
+      0 0 20px color-mix(in srgb, var(--glow-color, transparent) 40%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 14px var(--glow-color, transparent),
+      0 0 32px color-mix(in srgb, var(--glow-color, transparent) 50%, transparent);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ===========================
+   UTILITY CLASSES
+   =========================== */
+.animate-fade-up {
+  animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease both;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-tri-pulse {
+  animation: triPulse 2.4s ease-in-out infinite;
+}
+
+.animate-bar-rise {
+  animation: barRise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: bottom;
+}
+
+.animate-count-up {
+  animation: countUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-ring-fill {
+  animation: ringFill 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Staggered delay helpers */
+.delay-1 { animation-delay: 0.05s; }
+.delay-2 { animation-delay: 0.1s; }
+.delay-3 { animation-delay: 0.15s; }
+.delay-4 { animation-delay: 0.2s; }
+.delay-5 { animation-delay: 0.25s; }
+.delay-6 { animation-delay: 0.3s; }
+.delay-7 { animation-delay: 0.35s; }
+.delay-8 { animation-delay: 0.4s; }
+.delay-9 { animation-delay: 0.45s; }
+.delay-10 { animation-delay: 0.5s; }
+.delay-11 { animation-delay: 0.55s; }
+.delay-12 { animation-delay: 0.6s; }
+
+/* ===========================
+   CARD STYLES
+   =========================== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: all 0.25s ease;
+}
+
+.card:hover {
+  border-color: var(--border-light);
+  background: var(--bg-card-hover);
+}
+
+.card-2 {
+  background: var(--bg-card-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+/* ===========================
+   SPECTRUM BAR STYLES
+   =========================== */
+.spectrum-bar {
+  position: relative;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.spectrum-bar.triad {
+  width: 100%;
+  min-width: 32px;
+}
+
+.spectrum-bar.neglected {
+  width: 100%;
+  min-width: 24px;
+}
+
+.spectrum-bar.overdriven {
+  animation: triPulse 2.4s ease-in-out infinite;
+}
+
+.spectrum-bar.overdriven::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 14px var(--bar-color, transparent),
+    0 0 28px color-mix(in srgb, var(--bar-color, transparent) 50%, transparent);
+  pointer-events: none;
+}
+
+.spectrum-bar.active-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--bar-color, transparent) 40%, transparent);
+  pointer-events: none;
+}
+
+/* ===========================
+   SCROLLBAR
+   =========================== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-light);
+}
+
+/* ===========================
+   SELECTION
+   =========================== */
+::selection {
+  background: color-mix(in srgb, var(--gold) 30%, transparent);
+  color: var(--text);
+}
