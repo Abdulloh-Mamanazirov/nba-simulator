@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { CHEMICALS } from "@/lib/chemicals";
 import type { ChemicalScores } from "@/lib/scoring";
 import SpectrumBars from "@/app/components/shared/SpectrumBars";
 import ChemicalDetailPanel from "./ChemicalDetailPanel";
@@ -22,43 +21,28 @@ export default function SpectrumVisualizer({
   };
 
   return (
-    <div className="card p-4 sm:p-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="card p-5 sm:p-8">
+      <div className="flex items-center justify-between mb-6">
         <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)]">
           Your Neurochemical Spectrum
         </h2>
-        <span className="text-[10px] text-[var(--text-dim)]">
+        <span className="text-[11px] text-[var(--text-dim)] border rounded-full border-red-500 text-red-700 font-semibold px-2">
           Tap any bar for details
         </span>
       </div>
 
-      {/* Main spectrum */}
+      {/* Main spectrum — full width with group labels */}
       <div className="overflow-x-auto pb-2 -mx-2 px-2">
-        <div className="min-w-[400px]">
+        <div className="min-w-[500px]">
           <SpectrumBars
             scores={scores}
-            height={260}
+            height={320}
             animated={true}
             showLabels={true}
             showThresholds={true}
+            showGroupLabels={true}
             onBarClick={handleBarClick}
           />
-        </div>
-      </div>
-
-      {/* Legend */}
-      <div className="flex flex-wrap items-center justify-center gap-4 mt-4 pt-4 border-t border-[var(--border)]">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-sm bg-[var(--chem-dopamine)]" />
-          <span className="text-[10px] sm:text-xs text-[var(--text-muted)]">
-            Dominant Triad (overactivated)
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-sm bg-[var(--chem-gaba)]" />
-          <span className="text-[10px] sm:text-xs text-[var(--text-muted)]">
-            Neglected Architecture
-          </span>
         </div>
       </div>
 

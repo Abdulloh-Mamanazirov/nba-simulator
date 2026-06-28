@@ -21,6 +21,7 @@
 /build
 
 # misc
+/PLAN.md
 .DS_Store
 *.pem
 

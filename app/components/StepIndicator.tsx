@@ -34,7 +34,7 @@ export default function StepIndicator({
                 transition-all duration-300
                 ${
                   isActive
-                    ? "bg-[var(--gold)] text-[#060B12] shadow-[0_0_20px_rgba(232,181,90,0.3)]"
+                    ? "bg-[var(--gold)] text-[var(--gold-text)] shadow-[0_0_20px_rgba(232,181,90,0.3)]"
                     : isCompleted
                       ? "bg-[var(--bg-card-2)] text-[var(--gold)] border border-[var(--gold-dim)]"
                       : "bg-[var(--bg-card)] text-[var(--text-muted)] border border-[var(--border)]"
@@ -47,7 +47,7 @@ export default function StepIndicator({
                   w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-bold
                   ${
                     isActive
-                      ? "bg-[#060B12]/20 text-[#060B12]"
+                      ? "bg-[color-mix(in_srgb,var(--gold-text)_20%,transparent)] text-[var(--gold-text)]"
                       : isCompleted
                         ? "bg-[var(--gold-dim)]/20 text-[var(--gold)]"
                         : "bg-[var(--border)] text-[var(--text-muted)]"

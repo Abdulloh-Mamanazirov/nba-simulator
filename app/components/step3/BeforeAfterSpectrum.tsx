@@ -27,7 +27,8 @@ export default function BeforeAfterSpectrum({
         Projected neurochemical spectrum with all prescriptions applied.
       </p>
 
-      <div className="grid grid-cols-2 gap-6 sm:gap-8">
+      {/* Stack vertically on mobile, side-by-side on larger screens */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
         {/* Current */}
         <div>
           <div className="text-center mb-3">
@@ -37,8 +38,7 @@ export default function BeforeAfterSpectrum({
           </div>
           <SpectrumBars
             scores={currentScores}
-            height={120}
-            compact={true}
+            height={140}
             animated={false}
             showLabels={false}
           />
@@ -59,8 +59,7 @@ export default function BeforeAfterSpectrum({
           </div>
           <SpectrumBars
             scores={projectedScores}
-            height={120}
-            compact={true}
+            height={140}
             animated={true}
             showLabels={false}
           />

@@ -50,8 +50,8 @@ export const ACTIVITIES: Activity[] = [
   // === DIGITAL ===
   {
     id: "social_media",
-    name: "Social Media & Scrolling",
-    description: "Time spent on feeds, stories, short-form video, doomscrolling",
+    name: "Social media & scrolling",
+    description: "TikTok, Instagram, feeds, YouTube shorts",
     category: "digital",
     icon: "📱",
     impacts: [
@@ -71,9 +71,8 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     id: "notifications",
-    name: "Notifications & Multitasking",
-    description:
-      "Constant pings, tab-switching, checking multiple apps simultaneously",
+    name: "Notifications & multitasking",
+    description: "Task-switching, checking messages frequently",
     category: "digital",
     icon: "🔔",
     impacts: [
@@ -91,8 +90,8 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     id: "passive_screen",
-    name: "Passive Screen Time / TV",
-    description: "Streaming, watching without engagement, background content",
+    name: "Passive screen time",
+    description: "TV, Netflix, long-form YouTube — watching, not scrolling",
     category: "digital",
     icon: "📺",
     impacts: [
@@ -109,8 +108,8 @@ export const ACTIVITIES: Activity[] = [
   // === WORK ===
   {
     id: "deadline_work",
-    name: "Deadline-Driven Work",
-    description: "Time-pressured tasks, urgent deliverables, reactive work",
+    name: "Deadline-driven work",
+    description: "Urgency, performance pressure, time stress",
     category: "work",
     icon: "⏰",
     impacts: [
@@ -127,9 +126,8 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     id: "deep_work",
-    name: "Deep Single-Task Focus (60+ min)",
-    description:
-      "Sustained, uninterrupted work on one thing — coding, writing, research",
+    name: "Deep single-task focus",
+    description: "One thing, 60+ min — reading, writing, coding, studying",
     category: "work",
     icon: "🎯",
     impacts: [
@@ -145,8 +143,8 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     id: "creative_work",
-    name: "Creative / Making Work",
-    description: "Art, music, building, cooking — making something with your hands or mind",
+    name: "Creative or making work",
+    description: "Music, art, cooking, craft, building — making things",
     category: "work",
     icon: "🎨",
     impacts: [
@@ -165,8 +163,8 @@ export const ACTIVITIES: Activity[] = [
   // === BODY ===
   {
     id: "aerobic",
-    name: "Sustained Aerobic (30+ min)",
-    description: "Running, cycling, swimming — continuous effort past 30 minutes",
+    name: "Sustained aerobic exercise",
+    description: "Running, swimming, cycling — 30+ continuous min",
     category: "body",
     icon: "🏃",
     impacts: [
@@ -186,8 +184,8 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     id: "hiit",
-    name: "Brief HIIT (under 30 min)",
-    description: "High-intensity intervals, sprints, intense gym sessions",
+    name: "Brief high-intensity exercise",
+    description: "HIIT, gym sets, sprints — under 30 min",
     category: "body",
     icon: "💪",
     impacts: [
@@ -203,8 +201,8 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     id: "nature",
-    name: "Time in Nature",
-    description: "Parks, forests, water, open sky — being physically outside",
+    name: "Time in nature",
+    description: "Outside — walks, parks, mountains. Not through a screen.",
     category: "body",
     icon: "🌿",
     impacts: [
@@ -222,8 +220,8 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     id: "cold_exposure",
-    name: "Cold Exposure / Showers",
-    description: "Cold showers, ice baths, cold water immersion",
+    name: "Cold exposure",
+    description: "Cold showers, cold plunge — deliberate cold stress",
     category: "body",
     icon: "🧊",
     impacts: [
@@ -243,8 +241,8 @@ export const ACTIVITIES: Activity[] = [
   // === MIND & REST ===
   {
     id: "meditation",
-    name: "Meditation / Breathwork",
-    description: "Formal sitting practice, breathwork, body scanning",
+    name: "Meditation or breathwork",
+    description: "Formal practice, stillness, conscious breathing",
     category: "mind",
     icon: "🧘",
     impacts: [
@@ -262,8 +260,8 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     id: "sleep",
-    name: "Quality Sleep (7–9 hrs)",
-    description: "Consistent, deep, uninterrupted sleep in a dark room",
+    name: "Quality sleep",
+    description: "7–9 hrs, consistent schedule, no screens before bed",
     category: "mind",
     icon: "😴",
     impacts: [
@@ -283,8 +281,8 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     id: "sunlight",
-    name: "Morning Sunlight",
-    description: "Direct sunlight exposure within 1–2 hours of waking",
+    name: "Morning sunlight",
+    description: "Outdoor light within 2 hrs of waking — even overcast days count",
     category: "mind",
     icon: "☀️",
     impacts: [
@@ -299,9 +297,8 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     id: "diet",
-    name: "Quality Diet & Fermented Foods",
-    description:
-      "Whole foods, fiber, fermented foods, minimal processed food",
+    name: "Quality diet & fermented foods",
+    description: "Whole foods, vegetables, fermented foods (yogurt, kimchi)",
     category: "mind",
     icon: "🥗",
     impacts: [
@@ -320,9 +317,8 @@ export const ACTIVITIES: Activity[] = [
   // === SOCIAL ===
   {
     id: "deep_convo",
-    name: "Deep In-Person Conversation (30+ min)",
-    description:
-      "Extended, meaningful face-to-face conversation — not small talk",
+    name: "Deep in-person conversation",
+    description: "Face-to-face, 30+ min, someone you know well",
     category: "social",
     icon: "💬",
     impacts: [
@@ -340,9 +336,8 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     id: "touch",
-    name: "Physical Proximity & Touch",
-    description:
-      "Hugs, holding hands, sitting close, physical affection with trusted people",
+    name: "Physical proximity & touch",
+    description: "Real time with close others — family, friends, partner",
     category: "social",
     icon: "🤗",
     impacts: [
@@ -360,8 +355,8 @@ export const ACTIVITIES: Activity[] = [
   },
   {
     id: "alcohol",
-    name: "Alcohol / Substances",
-    description: "Drinking, recreational substances, cannabis",
+    name: "Alcohol or substances",
+    description: "Regular use — artificial relaxation, not genuine rest",
     category: "social",
     icon: "🍷",
     impacts: [

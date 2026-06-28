@@ -6,7 +6,6 @@ import { ACTIVITIES } from "@/lib/activities";
 import type { Ratings } from "@/lib/scoring";
 import CategoryTabs from "./CategoryTabs";
 import ActivityCard from "./ActivityCard";
-import MiniSpectrum from "./MiniSpectrum";
 
 interface RateYourWeekProps {
   ratings: Ratings;
@@ -27,31 +26,25 @@ export default function RateYourWeek({
       : ACTIVITIES.filter((a) => a.category === category);
 
   const ratedCount = Object.values(ratings).filter((v) => v > 0).length;
-  const allRated = ratedCount >= ACTIVITIES.length;
 
   return (
     <div className="animate-fade-up">
-      {/* Thesis statement */}
-      <div className="text-center mb-8 sm:mb-12 max-w-3xl mx-auto">
-        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-serif font-bold text-[var(--text)] leading-tight mb-4 sm:mb-6">
-          Neurochemical Bandwidth Audit
-        </h1>
-        <blockquote className="text-base sm:text-lg lg:text-xl font-serif italic text-[var(--text-muted)] leading-relaxed border-l-2 border-[var(--gold)] pl-4 sm:pl-6 text-left">
-          &ldquo;The central failure of late modernity may be less an excess of
-          stimulation than a systematic impoverishment of inhabitable
-          range.&rdquo;
-        </blockquote>
-        <p className="mt-4 sm:mt-6 text-sm sm:text-base text-[var(--text-muted)] max-w-2xl mx-auto leading-relaxed">
-          Your brain runs on 100+ neurochemical signaling systems. Modern life
-          overloads three of them while starving the rest. Rate your typical
-          week below to see which channels are active — and which have gone
-          silent.
-        </p>
-      </div>
+      {/* Hero */}
+      <div className="mb-10 sm:mb-14 max-w-3xl font-serif">
+        <h2 className="text-2xl sm:text-4xl lg:text-[42px] font-bold text-[var(--text)] leading-[1.15] mb-1">
+          You run on 100+ neurochemical channels.
+        </h2>
+        <h2 className="text-2xl sm:text-4xl lg:text-[42px] font-bold text-[var(--text-muted)] leading-[1.15] mb-6">
+          Modern life activates approximately three.
+        </h2>
 
-      {/* Mini spectrum preview */}
-      <div className="mb-6 sm:mb-8 sticky top-16 z-30 sm:static">
-        <MiniSpectrum ratings={ratings} />
+        <p className="text-sm sm:text-base text-[var(--text-muted)] leading-relaxed mb-2">
+          Late modernity overloads{" "}
+          <span className="font-semibold text-[var(--chem-dopamine)]">dopamine</span>,{" "}
+          <span className="font-semibold text-[var(--chem-cortisol)]">cortisol</span>, and{" "}
+          <span className="font-semibold text-[var(--chem-oxytocin)]">shallow oxytocin</span>{" "}
+          while degrading the conditions the remaining nine systems need to activate.
+        </p>
       </div>
 
       {/* Category filter */}
@@ -62,12 +55,12 @@ export default function RateYourWeek({
         />
       </div>
 
-      {/* Activity cards grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+      {/* Activity cards grid — 1 col mobile, 2 col default, 3 col on very wide screens */}
+      <div className="grid grid-cols-1 md:grid-cols-2 3xl:grid-cols-3 gap-4 mb-8">
         {filtered.map((activity, i) => (
           <div
             key={activity.id}
-            className="animate-fade-up"
+            className="animate-fade-up flex"
             style={{ animationDelay: `${i * 0.04}s` }}
           >
             <ActivityCard
@@ -92,7 +85,7 @@ export default function RateYourWeek({
             transition-all duration-300 cursor-pointer
             ${
               ratedCount > 0
-                ? "bg-[var(--gold)] text-[#060B12] shadow-[0_0_30px_rgba(232,181,90,0.3)] hover:shadow-[0_0_40px_rgba(232,181,90,0.5)] hover:scale-[1.02] active:scale-[0.98]"
+                ? "bg-[var(--gold)] text-[var(--gold-text)] shadow-[0_0_30px_rgba(232,181,90,0.3)] hover:shadow-[0_0_40px_rgba(232,181,90,0.5)] hover:scale-[1.02] active:scale-[0.98]"
                 : "bg-[var(--bg-card-2)] text-[var(--text-muted)] border border-[var(--border)] cursor-not-allowed"
             }
           `}

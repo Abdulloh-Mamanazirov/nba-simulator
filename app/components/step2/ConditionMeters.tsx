@@ -1,11 +1,29 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-
 interface ConditionMetersProps {
   slowness: number;
   embodiment: number;
   attention: number;
+}
+
+function getInsight(label: string, value: number): string {
+  if (label === "Slowness") {
+    if (value < 20) return "Your week provides almost no genuine deceleration";
+    if (value < 45) return "Some rest, but rarely the deep kind";
+    if (value < 70) return "Moderate — real stillness is present but inconsistent";
+    return "Strong — your week includes genuine slowness";
+  }
+  if (label === "Embodiment") {
+    if (value < 20) return "Very little physical reality in your routine";
+    if (value < 45) return "Some movement, but your body is mostly sidelined";
+    if (value < 70) return "Moderate — regular physical engagement";
+    return "Strong — your body is central to your week";
+  }
+  // Attention
+  if (value < 20) return "Attention is highly fragmented — rarely on one thing";
+  if (value < 45) return "Some depth, but fragmentation is dominant";
+  if (value < 70) return "Moderate — focused work happens but competes with distraction";
+  return "Strong — sustained attention is a regular part of your week";
 }
 
 function Ring({
@@ -81,35 +99,40 @@ export default function ConditionMeters({
   embodiment,
   attention,
 }: ConditionMetersProps) {
+  // Find the lowest condition for emphasis
+  const conditions = [
+    { label: "Slowness", value: slowness, color: "#38D39F" },
+    { label: "Embodiment", value: embodiment, color: "#63B3ED" },
+    { label: "Attention", value: attention, color: "#7F9CF5" },
+  ];
+  const lowest = conditions.reduce((a, b) => (a.value < b.value ? a : b));
+
   return (
     <div className="card p-4 sm:p-6">
-      <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)] mb-2">
-        The Three Activating Conditions
+      <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)] mb-1">
+        What Your Week Provides
       </h2>
-      <p className="text-xs text-[var(--text-dim)] mb-6">
-        These are what the modern environment most systematically removes.
+      <p className="text-xs text-[var(--text-dim)] mb-6 leading-relaxed">
+        All nine neglected systems need one of these three conditions to activate.
+        Your lowest is <span className="font-semibold text-[var(--text-muted)]">{lowest.label.toLowerCase()}</span>.
       </p>
 
       <div className="flex justify-center gap-6 sm:gap-10">
-        <Ring
-          value={slowness}
-          label="Slowness"
-          color="#38D39F"
-          delay={0.2}
-        />
-        <Ring
-          value={embodiment}
-          label="Embodiment"
-          color="#63B3ED"
-          delay={0.4}
-        />
-        <Ring
-          value={attention}
-          label="Attention"
-          color="#7F9CF5"
-          delay={0.6}
-        />
+        {conditions.map((c, i) => (
+          <Ring
+            key={c.label}
+            value={c.value}
+            label={c.label}
+            color={c.color}
+            delay={0.2 + i * 0.2}
+          />
+        ))}
       </div>
+
+      {/* Insight for the lowest condition */}
+      <p className="text-xs font-serif italic text-[var(--text-muted)] text-center mt-5 leading-relaxed">
+        {getInsight(lowest.label, lowest.value)}
+      </p>
     </div>
   );
 }

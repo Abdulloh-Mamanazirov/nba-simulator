@@ -54,10 +54,22 @@ export default function Home() {
       <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--bg)]/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-[var(--gold)] shadow-[0_0_8px_rgba(232,181,90,0.4)]" />
-            <span className="text-xs sm:text-sm font-semibold text-[var(--text-muted)] tracking-wide hidden sm:inline">
-              NBA
-            </span>
+            <div className="flex gap-[3px] items-end">
+              {["#FF5722", "#E53E3E", "#F6AD55"].map((c, i) => (
+                <div
+                  key={i}
+                  style={{
+                    width: 4,
+                    height: 10 + i * 8,
+                    background: c,
+                    borderRadius: 2,
+                  }}
+                />
+              ))}
+            </div>
+            <h1 className="text-[14px] sm:text-[17px] font-bold tracking-[-0.02em] leading-tight text-[var(--text)]">
+              Neurochemical <br /> Bandwidth Audit
+            </h1>
           </div>
 
           <StepIndicator

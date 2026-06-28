@@ -5,12 +5,10 @@ import {
   calculateConditionScores,
   calculateMonocultureIndex,
   generateNarrative,
-  calculateBandwidth,
 } from "@/lib/scoring";
 import BandwidthScore from "./BandwidthScore";
 import SpectrumVisualizer from "./SpectrumVisualizer";
 import DynorphinCallout from "./DynorphinCallout";
-import WhatIfSimulator from "./WhatIfSimulator";
 import ConditionMeters from "./ConditionMeters";
 import ChemicalAccordion from "./ChemicalAccordion";
 import MonocultureScore from "./MonocultureScore";
@@ -62,13 +60,10 @@ export default function YourResults({
         <MonocultureScore index={monocultureIndex} />
       </div>
 
-      {/* What-If Simulator */}
-      <WhatIfSimulator ratings={ratings} />
-
       {/* Chemical Interaction Map */}
       <ChemicalInteractionMap scores={scores} />
 
-      {/* Chemical Accordion */}
+      {/* Chemical Accordion — collapsed by default */}
       <ChemicalAccordion scores={scores} />
 
       {/* Navigation */}
@@ -87,7 +82,7 @@ export default function YourResults({
           onClick={onNext}
           id="get-prescription-btn"
           className="px-8 py-3.5 rounded-xl text-sm font-semibold cursor-pointer
-                     bg-[var(--gold)] text-[#060B12]
+                     bg-[var(--gold)] text-[var(--gold-text)]
                      shadow-[0_0_30px_rgba(232,181,90,0.3)]
                      hover:shadow-[0_0_40px_rgba(232,181,90,0.5)] hover:scale-[1.02]
                      active:scale-[0.98] transition-all duration-300"

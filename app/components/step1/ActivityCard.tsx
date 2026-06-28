@@ -47,7 +47,7 @@ export default function ActivityCard({
   return (
     <div
       className={`
-        card p-4 sm:p-5 flex flex-col gap-3
+        card p-4 sm:p-5 flex flex-col gap-3 w-full h-full
         ${rating > 0 ? "border-[var(--border-light)]" : ""}
       `}
     >
@@ -82,7 +82,7 @@ export default function ActivityCard({
               transition-all duration-200 cursor-pointer
               ${
                 rating === i
-                  ? "bg-[var(--gold)] text-[#060B12] shadow-[0_0_12px_rgba(232,181,90,0.2)]"
+                  ? "bg-[var(--gold)] text-[var(--gold-text)] shadow-[0_0_12px_rgba(232,181,90,0.2)]"
                   : "bg-[var(--bg-card-2)] text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-card-hover)]"
               }
             `}

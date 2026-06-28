@@ -43,7 +43,7 @@ export default function BandwidthScore({ bandwidth }: BandwidthScoreProps) {
           Neurochemical Bandwidth
         </span>
       </div>
-      <div className="flex items-baseline justify-center gap-2">
+      <div className="flex items-baseline justify-center gap-2 font-serif">
         <span
           className="text-6xl sm:text-8xl font-bold tabular-nums"
           style={{ color: getColor() }}
@@ -54,7 +54,7 @@ export default function BandwidthScore({ bandwidth }: BandwidthScoreProps) {
           / 9
         </span>
       </div>
-      <p className="text-sm sm:text-base text-[var(--text-muted)] mt-1">
+      <p className="text-sm sm:text-base text-[var(--text-muted)] mt-1 font-serif">
         neglected channels active
       </p>
       <div

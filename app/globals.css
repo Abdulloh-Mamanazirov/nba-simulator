@@ -1,9 +1,5 @@
-@import "tailwindcss";
-
-/* ===========================
-   GOOGLE FONTS
-   =========================== */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap");
+@import "tailwindcss";
 
 /* ===========================
    TAILWIND THEME EXTENSIONS
@@ -30,6 +26,7 @@
   --text-dim: #3d5573;
   --gold: #e8b55a;
   --gold-dim: #b8923e;
+  --gold-text: #060B12;
   --success: #48bb78;
   --danger: #e53e3e;
   --danger-dim: #c53030;
@@ -56,14 +53,15 @@
   --bg: #f5f0eb;
   --bg-card: #ffffff;
   --bg-card-2: #f9f6f2;
-  --bg-card-hover: #f0ebe4;
+  --bg-card-hover: #ffffff73;
   --border: #d4c8b8;
   --border-light: #e2d8cc;
   --text: #1a1410;
   --text-muted: #7a6e60;
   --text-dim: #a69882;
-  --gold: #b88a2e;
-  --gold-dim: #9a7428;
+  --gold: #c9952f;
+  --gold-dim: #a67a24;
+  --gold-text: #ffffff;
   --success: #2f8a56;
   --danger: #c53030;
   --danger-dim: #a02020;
