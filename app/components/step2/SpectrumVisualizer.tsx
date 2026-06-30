@@ -26,7 +26,7 @@ export default function SpectrumVisualizer({
         <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)]">
           Your Neurochemical Spectrum
         </h2>
-        <span className="text-[11px] text-[var(--text-dim)] border rounded-full border-red-500 text-red-700 font-semibold px-2">
+        <span className="whitespace-nowrap text-[9px] sm:text-[11px] text-[var(--text-dim)] border rounded-full border-red-500 text-red-700 font-semibold px-2">
           Tap any bar for details
         </span>
       </div>

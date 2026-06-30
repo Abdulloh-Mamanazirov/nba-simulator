@@ -67,13 +67,13 @@ export default function YourResults({
       <ChemicalAccordion scores={scores} />
 
       {/* Navigation */}
-      <div className="flex items-center justify-between pt-4 pb-8">
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-4 pb-8">
         <button
           onClick={onBack}
           className="px-6 py-3 rounded-xl text-sm font-medium cursor-pointer
                      bg-[var(--bg-card)] text-[var(--text-muted)] border border-[var(--border)]
                      hover:border-[var(--border-light)] hover:text-[var(--text)]
-                     transition-all duration-200"
+                     transition-all duration-200 w-full sm:w-auto"
         >
           ← Edit Ratings
         </button>
@@ -85,7 +85,7 @@ export default function YourResults({
                      bg-[var(--gold)] text-[var(--gold-text)]
                      shadow-[0_0_30px_rgba(232,181,90,0.3)]
                      hover:shadow-[0_0_40px_rgba(232,181,90,0.5)] hover:scale-[1.02]
-                     active:scale-[0.98] transition-all duration-300"
+                     active:scale-[0.98] transition-all duration-300 w-full sm:w-auto text-center"
         >
           Get My Prescription →
         </button>

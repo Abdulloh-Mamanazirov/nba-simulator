@@ -1,7 +1,11 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { calculateChemicalScores, calculateBandwidth, type Ratings } from "@/lib/scoring";
+import {
+  calculateChemicalScores,
+  calculateBandwidth,
+  type Ratings,
+} from "@/lib/scoring";
 import { saveResult } from "@/lib/storage";
 import StepIndicator from "./components/StepIndicator";
 import ThemeToggle from "./components/ThemeToggle";
@@ -21,7 +25,7 @@ export default function Home() {
     (activityId: string, rating: number) => {
       setRatings((prev) => ({ ...prev, [activityId]: rating }));
     },
-    []
+    [],
   );
 
   const goToStep = (step: number) => {
@@ -67,8 +71,14 @@ export default function Home() {
                 />
               ))}
             </div>
-            <h1 className="text-[14px] sm:text-[17px] font-bold tracking-[-0.02em] leading-tight text-[var(--text)]">
-              Neurochemical <br /> Bandwidth Audit
+            <h1 className="group text-[16px] sm:text-[17px] font-bold tracking-[-0.02em] leading-tight text-[var(--text)] cursor-default">
+              <span className="sm:hidden block group-hover:hidden group-active:hidden">
+                NBA
+              </span>
+              <span className="hidden sm:block group-hover:block group-active:block">
+                Neurochemical <br className="hidden sm:inline" /> Bandwidth
+                Audit
+              </span>
             </h1>
           </div>
 

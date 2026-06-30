@@ -6,6 +6,12 @@ interface ConditionMetersProps {
   attention: number;
 }
 
+const tooltipText: Record<string, string> = {
+  Slowness: "A psychological state characterized by intentional deceleration, reduced cognitive load, and deliberate pacing, essential for parasympathetic recovery.",
+  Embodiment: "The subjective experience of being grounded in one's physical body, involving sensory awareness and interoceptive sensitivity.",
+  Attention: "The ability to sustain focus on a single cognitive thread or perceptual object without fragmentation by competing stimuli.",
+};
+
 function getInsight(label: string, value: number): string {
   if (label === "Slowness") {
     if (value < 20) return "Your week provides almost no genuine deceleration";
@@ -87,8 +93,11 @@ function Ring({
           </span>
         </div>
       </div>
-      <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+      <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] group relative cursor-help">
         {label}
+        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-[var(--bg-card-2)] text-[var(--text)] text-[10px] sm:text-xs p-2 rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 font-normal normal-case tracking-normal">
+          {tooltipText[label]}
+        </span>
       </span>
     </div>
   );
@@ -106,6 +115,7 @@ export default function ConditionMeters({
     { label: "Attention", value: attention, color: "#7F9CF5" },
   ];
   const lowest = conditions.reduce((a, b) => (a.value < b.value ? a : b));
+  const allEqual = conditions.every((c) => c.value === conditions[0].value);
 
   return (
     <div className="card p-4 sm:p-6">
@@ -114,7 +124,13 @@ export default function ConditionMeters({
       </h2>
       <p className="text-xs text-[var(--text-dim)] mb-6 leading-relaxed">
         All nine neglected systems need one of these three conditions to activate.
-        Your lowest is <span className="font-semibold text-[var(--text-muted)]">{lowest.label.toLowerCase()}</span>.
+        {allEqual ? (
+          <span className="font-semibold text-[var(--text-muted)]"> Your conditions are perfectly balanced.</span>
+        ) : (
+          <>
+            {" "}Your lowest is <span className="font-semibold text-[var(--text-muted)]">{lowest.label.toLowerCase()}</span>.
+          </>
+        )}
       </p>
 
       <div className="flex justify-center gap-6 sm:gap-10">

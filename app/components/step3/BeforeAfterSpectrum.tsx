@@ -28,20 +28,24 @@ export default function BeforeAfterSpectrum({
       </p>
 
       {/* Stack vertically on mobile, side-by-side on larger screens */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Current */}
-        <div>
+        <div className="w-full">
           <div className="text-center mb-3">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
               Current
             </span>
           </div>
-          <SpectrumBars
-            scores={currentScores}
-            height={140}
-            animated={false}
-            showLabels={false}
-          />
+          <div className="overflow-x-auto pb-2 -mx-2 px-2">
+            <div className="min-w-[400px]">
+              <SpectrumBars
+                scores={currentScores}
+                height={140}
+                animated={false}
+                showLabels={false}
+              />
+            </div>
+          </div>
           <div className="text-center mt-3">
             <span className="text-2xl font-bold text-[var(--text)]">
               {currentBandwidth}
@@ -51,18 +55,22 @@ export default function BeforeAfterSpectrum({
         </div>
 
         {/* Projected */}
-        <div>
+        <div className="w-full">
           <div className="text-center mb-3">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--success)]">
               Projected
             </span>
           </div>
-          <SpectrumBars
-            scores={projectedScores}
-            height={140}
-            animated={true}
-            showLabels={false}
-          />
+          <div className="overflow-x-auto pb-2 -mx-2 px-2">
+            <div className="min-w-[400px]">
+              <SpectrumBars
+                scores={projectedScores}
+                height={140}
+                animated={true}
+                showLabels={false}
+              />
+            </div>
+          </div>
           <div className="text-center mt-3">
             <span className="text-2xl font-bold text-[var(--success)]">
               {projectedBandwidth}

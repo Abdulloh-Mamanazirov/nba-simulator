@@ -64,16 +64,16 @@ export default function ChemicalAccordion({ scores }: ChemicalAccordionProps) {
 
                   {/* Name and plain name */}
                   <div className="flex-1 min-w-0">
-                    <span className="text-sm font-medium text-[var(--text)]">
+                    <span className="text-sm font-medium text-[var(--text)] block sm:inline">
                       {chem.name}
                     </span>
-                    <span className="text-xs text-[var(--text-muted)] ml-2">
+                    <span className="text-xs text-[var(--text-muted)] block sm:inline sm:ml-2">
                       {chem.plainName}
                     </span>
                   </div>
 
                   {/* Score bar */}
-                  <div className="w-20 sm:w-28 h-1.5 bg-[var(--bg-card-2)] rounded-full overflow-hidden flex-shrink-0">
+                  <div className="hidden sm:block w-20 sm:w-28 h-1.5 bg-[var(--bg-card-2)] rounded-full overflow-hidden flex-shrink-0">
                     <div
                       className="h-full rounded-full transition-all duration-500"
                       style={{
@@ -94,7 +94,7 @@ export default function ChemicalAccordion({ scores }: ChemicalAccordionProps) {
                   {/* Status */}
                   {(isOverdriven || isStarving) && (
                     <span
-                      className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded flex-shrink-0 ${
+                      className={`hidden sm:inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded flex-shrink-0 ${
                         isOverdriven
                           ? "text-[var(--danger)] bg-[var(--danger)]/10"
                           : "text-[var(--gold)] bg-[var(--gold)]/10"
