@@ -1,15 +1,24 @@
-import { CHEMICALS, NEGLECTED_CHEMICALS } from "./chemicals";
+import {
+  CHEMICALS,
+  NEGLECTED_CHEMICALS,
+  getChemical,
+  type Chemical,
+} from "./chemicals";
 import { ACTIVITIES } from "./activities";
+import { CHEMICAL_INTERACTIONS } from "./interactions";
 
 export type Ratings = Record<string, number>;
 export type ChemicalScores = Record<string, number>;
 
+const clamp = (v: number) => Math.max(0, Math.min(100, v));
+const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+
 /**
- * Calculate individual chemical scores from user ratings.
+ * First pass: each chemical from the user's activities alone.
  * Formula: chemical_score = base + Σ((activity_rating / 4) × weight)
- * Clamped to 0–100.
+ * Clamped to 0–100 (not yet rounded — the second pass rounds).
  */
-export function calculateChemicalScores(ratings: Ratings): ChemicalScores {
+function calculateBaseScores(ratings: Ratings): ChemicalScores {
   const scores: ChemicalScores = {};
 
   for (const chemical of CHEMICALS) {
@@ -24,10 +33,80 @@ export function calculateChemicalScores(ratings: Ratings): ChemicalScores {
       }
     }
 
-    scores[chemical.id] = Math.max(0, Math.min(100, Math.round(score)));
+    scores[chemical.id] = clamp(score);
   }
 
   return scores;
+}
+
+/**
+ * Second pass: apply cross-chemical interactions (the Chemical Interaction Map).
+ * A source chemical modulates its targets based on how activated it is:
+ *  - "suppresses" scales with how far the source is above its danger threshold
+ *    (chronic overdrive — e.g. sustained cortisol crushing GABA / recovery systems).
+ *  - "supports" scales with how far the source is above its starvation threshold
+ *    (an active system lifting a partner — e.g. GABA facilitating allopregnanolone).
+ * All modifiers read the first-pass scores, so this is a single, order-independent pass.
+ */
+function applyInteractions(base: ChemicalScores): ChemicalScores {
+  const deltas: Record<string, number> = {};
+
+  for (const link of CHEMICAL_INTERACTIONS) {
+    const source = getChemical(link.from);
+    const sourceScore = base[link.from] ?? 0;
+    const floor =
+      link.type === "suppresses"
+        ? source.dangerThreshold
+        : source.starvationThreshold;
+
+    const activation = clamp01((sourceScore - floor) / (100 - floor));
+    if (activation <= 0) continue;
+
+    const effect = link.magnitude * activation;
+    deltas[link.to] =
+      (deltas[link.to] ?? 0) + (link.type === "suppresses" ? -effect : effect);
+  }
+
+  const result: ChemicalScores = {};
+  for (const chemical of CHEMICALS) {
+    const adjusted = (base[chemical.id] ?? 0) + (deltas[chemical.id] ?? 0);
+    result[chemical.id] = Math.round(clamp(adjusted));
+  }
+  return result;
+}
+
+/**
+ * Calculate individual chemical scores from user ratings, including the
+ * second-order interactions between chemical systems. Clamped to 0–100.
+ */
+export function calculateChemicalScores(ratings: Ratings): ChemicalScores {
+  return applyInteractions(calculateBaseScores(ratings));
+}
+
+/**
+ * How "online" a single neglected channel is, on a continuous 0–1 scale.
+ * Crossing the starvation threshold is worth 0.5; the remaining 0.5 accrues
+ * as the channel climbs from starvation toward the danger threshold. This gives
+ * partial credit for lifting a dead system off the floor even before it fully
+ * crosses threshold — which the discrete count alone cannot express.
+ */
+export function activationFraction(score: number, chem: Chemical): number {
+  const s = chem.starvationThreshold;
+  const d = chem.dangerThreshold;
+  if (score <= s) return 0.5 * clamp01(score / s);
+  return 0.5 + 0.5 * clamp01((score - s) / (d - s));
+}
+
+/**
+ * Continuous counterpart to calculateBandwidth: the summed activation of all
+ * nine neglected channels (0–9). Used to rank interventions so that progress on
+ * deeply-starved systems is not invisible just because it hasn't crossed a line.
+ */
+export function calculateContinuousBandwidth(scores: ChemicalScores): number {
+  return NEGLECTED_CHEMICALS.reduce(
+    (sum, c) => sum + activationFraction(scores[c.id] ?? 0, c),
+    0
+  );
 }
 
 /**

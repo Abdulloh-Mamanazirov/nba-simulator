@@ -1,8 +1,9 @@
-import { ACTIVITIES, FREQUENCY_LABELS } from "./activities";
-import { NEGLECTED_CHEMICALS, getChemical } from "./chemicals";
+import { ACTIVITIES, FREQUENCY_LABELS, type Activity } from "./activities";
+import { NEGLECTED_CHEMICALS, type Chemical } from "./chemicals";
 import {
   calculateChemicalScores,
   calculateBandwidth,
+  calculateContinuousBandwidth,
   type Ratings,
   type ChemicalScores,
 } from "./scoring";
@@ -11,6 +12,7 @@ export interface Prescription {
   activityId: string;
   activityName: string;
   activityIcon: string;
+  direction: "increase" | "reduce";
   targetFrequency: string;
   unlockedChemicals: {
     id: string;
@@ -18,129 +20,214 @@ export interface Prescription {
     plainName: string;
     color: string;
   }[];
+  /** Discrete channels newly crossing their starvation threshold (may be 0). */
   channelGain: number;
+  /** Continuous activation gained across all neglected channels (0–9 scale). */
+  rangeGain: number;
   personalizedSentence: string;
   newBandwidth: number;
 }
 
+type ScoredChemical = Chemical & { score: number };
+
+/** Minimum continuous range gain for an intervention to be worth showing. */
+const MIN_RANGE_GAIN = 0.05;
+
+/** Specific, actionable target for an activity the user should do more of. */
+function increaseTargetFrequency(activity: Activity): string {
+  switch (activity.id) {
+    case "aerobic":
+      return "Daily, 30+ continuous minutes";
+    case "deep_work":
+      return "Daily, 60+ minute sessions";
+    case "deep_convo":
+      return "3–4× per week, 30+ minutes each";
+    case "meditation":
+      return "Daily, 10–20 minutes minimum";
+    case "sleep":
+      return "Daily, 7–9 hours, consistent schedule";
+    case "cold_exposure":
+      return "Daily, 2–5 minutes cold water";
+    case "nature":
+      return "3–4× per week, 20+ minutes";
+    case "sunlight":
+      return "Daily, 10–15 minutes within first hour of waking";
+    case "diet":
+      return "Daily — whole foods, fiber, fermented foods";
+    case "touch":
+      return "Daily — physical presence with trusted people";
+    case "creative_work":
+      return "3–4× per week, sustained sessions";
+    default:
+      return FREQUENCY_LABELS[4]; // Daily
+  }
+}
+
+/** The neglected chemical this activity most strongly depletes, if any. */
+function mostDepletedBy(activity: Activity): Chemical | null {
+  let worst: Chemical | null = null;
+  let worstWeight = 0;
+  for (const c of NEGLECTED_CHEMICALS) {
+    const w = activity.weights[c.id] ?? 0;
+    if (w < worstWeight) {
+      worstWeight = w;
+      worst = c;
+    }
+  }
+  return worst;
+}
+
 /**
- * For each activity the user rates below 3 ("3–4×/wk"),
- * simulate adding it at Daily level (4) and calculate bandwidth delta.
- * Rank by impact. Return top 4.
+ * Build a single prescription for moving an activity in one direction
+ * (increase to Daily, or reduce to Never). Returns null if the move produces
+ * no meaningful gain in the user's continuous neurochemical range.
+ */
+function buildCandidate(
+  activity: Activity,
+  direction: "increase" | "reduce",
+  ratings: Ratings,
+  currentScores: ChemicalScores,
+  currentBandwidth: number,
+  currentRange: number,
+  lowestNeglected: ScoredChemical[]
+): Prescription | null {
+  const simulatedRating = direction === "increase" ? 4 : 0;
+  const simulatedRatings = { ...ratings, [activity.id]: simulatedRating };
+  const simulatedScores = calculateChemicalScores(simulatedRatings);
+
+  const rangeGain =
+    calculateContinuousBandwidth(simulatedScores) - currentRange;
+  if (rangeGain <= MIN_RANGE_GAIN) return null;
+
+  const simulatedBandwidth = calculateBandwidth(simulatedScores);
+  const channelGain = simulatedBandwidth - currentBandwidth;
+
+  const unlockedChemicals = NEGLECTED_CHEMICALS.filter((c) => {
+    const wasBelow = (currentScores[c.id] ?? 0) < c.starvationThreshold;
+    const nowAbove = (simulatedScores[c.id] ?? 0) >= c.starvationThreshold;
+    return wasBelow && nowAbove;
+  }).map((c) => ({
+    id: c.id,
+    name: c.name,
+    plainName: c.plainName,
+    color: c.color,
+  }));
+
+  let activityName: string;
+  let targetFrequency: string;
+  let personalizedSentence: string;
+
+  if (direction === "increase") {
+    // Reference the user's lowest neglected system that this activity boosts.
+    let best = lowestNeglected[0];
+    for (const nc of lowestNeglected) {
+      if ((activity.weights[nc.id] ?? 0) > 0) {
+        best = nc;
+        break;
+      }
+    }
+    const chemScore = currentScores[best.id] ?? 0;
+    const isPrimary = (activity.weights[best.id] ?? 0) > 20;
+
+    activityName = activity.name;
+    targetFrequency = increaseTargetFrequency(activity);
+    personalizedSentence = `Your ${best.plainName} (${best.name}) is at ${chemScore}/100. ${activity.name} is ${
+      isPrimary ? "its primary and most direct activator" : "one of its key activators"
+    }.`;
+  } else {
+    activityName = `Reduce ${activity.name}`;
+    targetFrequency = "Cut to never or monthly";
+
+    if (activity.id === "alcohol") {
+      const depleted = mostDepletedBy(activity) ?? lowestNeglected[0];
+      const chemScore = currentScores[depleted.id] ?? 0;
+      personalizedSentence = `Alcohol artificially hijacks GABA receptors and suppresses glymphatic clearance. Reducing intake would allow your ${depleted.plainName} (${depleted.name}) to recover from ${chemScore}/100.`;
+    } else {
+      const depleted = mostDepletedBy(activity) ?? lowestNeglected[0];
+      const chemScore = currentScores[depleted.id] ?? 0;
+      personalizedSentence = `${activity.name} is one of the strongest suppressors of your ${depleted.plainName} (${depleted.name}), currently at ${chemScore}/100. Reducing it is one of the most direct ways to bring that system back online.`;
+    }
+  }
+
+  return {
+    activityId: activity.id,
+    activityName,
+    activityIcon: activity.icon,
+    direction,
+    targetFrequency,
+    unlockedChemicals,
+    channelGain,
+    rangeGain,
+    personalizedSentence,
+    newBandwidth: simulatedBandwidth,
+  };
+}
+
+/**
+ * Generate personalized prescriptions ranked by their impact on the user's
+ * continuous neurochemical range. For each activity we consider both doing more
+ * of it (if there's meaningful room) and doing less of it (if it's currently
+ * frequent enough to matter); only the higher-impact, positive-gain direction
+ * is kept. Returns the top 4.
  */
 export function generatePrescriptions(
   ratings: Ratings,
   currentScores: ChemicalScores,
   currentBandwidth: number
 ): Prescription[] {
-  const candidates: Prescription[] = [];
+  const currentRange = calculateContinuousBandwidth(currentScores);
 
-  // Find the user's lowest neglected chemical for personalized sentences
-  const lowestNeglected = NEGLECTED_CHEMICALS.map((c) => ({
+  const lowestNeglected: ScoredChemical[] = NEGLECTED_CHEMICALS.map((c) => ({
     ...c,
     score: currentScores[c.id] ?? 0,
   })).sort((a, b) => a.score - b.score);
 
+  const candidates: Prescription[] = [];
+
   for (const activity of ACTIVITIES) {
     const currentRating = ratings[activity.id] ?? 0;
+    const options: Prescription[] = [];
 
-    // Only consider activities rated below 3 (below "3–4×/wk")
-    if (currentRating >= 3) continue;
-
-    // Skip activities that are purely harmful (alcohol)
-    // Actually include it — user might drink daily and reducing it helps
-    // We simulate setting to "Daily" for positive activities,
-    // and "Never" for negative activities
-    const isNegative = activity.id === "alcohol";
-    const simulatedRating = isNegative ? 0 : 4;
-
-    // Create simulated ratings
-    const simulatedRatings = { ...ratings, [activity.id]: simulatedRating };
-    const simulatedScores = calculateChemicalScores(simulatedRatings);
-    const simulatedBandwidth = calculateBandwidth(simulatedScores);
-    const gain = simulatedBandwidth - currentBandwidth;
-
-    // Only include if there's a positive gain
-    if (gain <= 0) continue;
-
-    // Determine which chemicals would newly cross starvation threshold
-    const unlockedChemicals = NEGLECTED_CHEMICALS.filter((c) => {
-      const wasBelow =
-        (currentScores[c.id] ?? 0) < c.starvationThreshold;
-      const nowAbove =
-        (simulatedScores[c.id] ?? 0) >= c.starvationThreshold;
-      return wasBelow && nowAbove;
-    }).map((c) => ({
-      id: c.id,
-      name: c.name,
-      plainName: c.plainName,
-      color: c.color,
-    }));
-
-    // Find the most-affected low chemical for this activity
-    let bestChemical = lowestNeglected[0];
-    const activityWeights = activity.weights;
-    for (const nc of lowestNeglected) {
-      if ((activityWeights[nc.id] ?? 0) > 0) {
-        bestChemical = nc;
-        break;
-      }
+    // Do more — only where there's real room to grow (below 3–4×/wk).
+    if (currentRating < 3) {
+      const c = buildCandidate(
+        activity,
+        "increase",
+        ratings,
+        currentScores,
+        currentBandwidth,
+        currentRange,
+        lowestNeglected
+      );
+      if (c) options.push(c);
     }
 
-    // Build target frequency string
-    let targetFrequency: string;
-    if (isNegative) {
-      targetFrequency = "Eliminate or reduce to monthly";
-    } else {
-      const targetLabel = FREQUENCY_LABELS[4]; // Daily
-      targetFrequency = `${targetLabel}`;
-      // Add specifics based on activity
-      if (activity.id === "aerobic")
-        targetFrequency = "Daily, 30+ continuous minutes";
-      if (activity.id === "deep_work")
-        targetFrequency = "Daily, 60+ minute sessions";
-      if (activity.id === "deep_convo")
-        targetFrequency = "3–4× per week, 30+ minutes each";
-      if (activity.id === "meditation")
-        targetFrequency = "Daily, 10–20 minutes minimum";
-      if (activity.id === "sleep")
-        targetFrequency = "Daily, 7–9 hours, consistent schedule";
-      if (activity.id === "cold_exposure")
-        targetFrequency = "Daily, 2–5 minutes cold water";
-      if (activity.id === "nature")
-        targetFrequency = "3–4× per week, 20+ minutes";
-      if (activity.id === "sunlight")
-        targetFrequency = "Daily, 10–15 minutes within first hour of waking";
-      if (activity.id === "diet")
-        targetFrequency =
-          "Daily — whole foods, fiber, fermented foods";
-      if (activity.id === "touch")
-        targetFrequency = "Daily — physical presence with trusted people";
-      if (activity.id === "creative_work")
-        targetFrequency = "3–4× per week, sustained sessions";
+    // Do less — only where they currently do it enough (weekly or more) for
+    // reducing it to matter.
+    if (currentRating >= 2) {
+      const c = buildCandidate(
+        activity,
+        "reduce",
+        ratings,
+        currentScores,
+        currentBandwidth,
+        currentRange,
+        lowestNeglected
+      );
+      if (c) options.push(c);
     }
 
-    // Build personalized sentence
-    const chemScore = currentScores[bestChemical.id] ?? 0;
-    const personalizedSentence = isNegative
-      ? `Alcohol artificially hijacks GABA receptors and suppresses glymphatic clearance. Reducing intake would allow your ${bestChemical.plainName} (${bestChemical.name}) to recover from ${chemScore}/100.`
-      : `Your ${bestChemical.plainName} (${bestChemical.name}) is at ${chemScore}/100. ${activity.name} is ${(activityWeights[bestChemical.id] ?? 0) > 20 ? "its primary and most direct activator" : "one of its key activators"}.`;
-
-    candidates.push({
-      activityId: activity.id,
-      activityName: isNegative ? "Reduce Alcohol / Substances" : activity.name,
-      activityIcon: activity.icon,
-      targetFrequency,
-      unlockedChemicals,
-      channelGain: gain,
-      personalizedSentence,
-      newBandwidth: simulatedBandwidth,
-    });
+    // Keep at most one direction per activity — the more impactful one.
+    if (options.length > 0) {
+      options.sort((a, b) => b.rangeGain - a.rangeGain);
+      candidates.push(options[0]);
+    }
   }
 
-  // Sort by channel gain descending, then by number of unlocked chemicals
   candidates.sort((a, b) => {
-    if (b.channelGain !== a.channelGain) return b.channelGain - a.channelGain;
+    if (Math.abs(b.rangeGain - a.rangeGain) > 0.001) {
+      return b.rangeGain - a.rangeGain;
+    }
     return b.unlockedChemicals.length - a.unlockedChemicals.length;
   });
 
@@ -148,7 +235,8 @@ export function generatePrescriptions(
 }
 
 /**
- * Calculate projected scores if user followed all prescriptions.
+ * Calculate projected scores if the user followed all prescriptions,
+ * applying each in its recommended direction.
  */
 export function calculateProjectedScores(
   ratings: Ratings,
@@ -157,11 +245,7 @@ export function calculateProjectedScores(
   const projectedRatings = { ...ratings };
 
   for (const p of prescriptions) {
-    if (p.activityId === "alcohol") {
-      projectedRatings[p.activityId] = 0;
-    } else {
-      projectedRatings[p.activityId] = 4;
-    }
+    projectedRatings[p.activityId] = p.direction === "reduce" ? 0 : 4;
   }
 
   const scores = calculateChemicalScores(projectedRatings);

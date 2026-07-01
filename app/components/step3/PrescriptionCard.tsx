@@ -27,7 +27,7 @@ export default function PrescriptionCard({
               #{index + 1}
             </span>
             <span className="text-xs font-bold text-[var(--success)]">
-              +{prescription.channelGain} channel{prescription.channelGain !== 1 ? "s" : ""}
+              +{prescription.rangeGain.toFixed(1)} range
             </span>
           </div>
           <h3 className="text-base sm:text-lg font-bold text-[var(--text)]">

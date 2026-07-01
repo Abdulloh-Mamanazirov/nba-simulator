@@ -2,71 +2,8 @@
 
 import { useState } from "react";
 import { CHEMICALS } from "@/lib/chemicals";
+import { CHEMICAL_INTERACTIONS as INTERACTIONS } from "@/lib/interactions";
 import type { ChemicalScores } from "@/lib/scoring";
-
-interface Interaction {
-  from: string;
-  to: string;
-  type: "suppresses" | "supports";
-  description: string;
-}
-
-const INTERACTIONS: Interaction[] = [
-  {
-    from: "cortisol",
-    to: "gaba",
-    type: "suppresses",
-    description: "Chronic cortisol prevents genuine GABA-mediated rest",
-  },
-  {
-    from: "cortisol",
-    to: "allopregnanolone",
-    type: "suppresses",
-    description: "Sustained stress collapses allopregnanolone production",
-  },
-  {
-    from: "dopamine",
-    to: "serotonin",
-    type: "suppresses",
-    description: "Chronic dopamine overstimulation depletes serotonin over time",
-  },
-  {
-    from: "gaba",
-    to: "allopregnanolone",
-    type: "supports",
-    description: "GABA activation facilitates allopregnanolone at GABA-A receptors",
-  },
-  {
-    from: "bdnf",
-    to: "serotonin",
-    type: "supports",
-    description: "BDNF and serotonin have a bidirectional positive relationship",
-  },
-  {
-    from: "serotonin",
-    to: "bdnf",
-    type: "supports",
-    description: "Serotonin promotes BDNF expression in the hippocampus",
-  },
-  {
-    from: "cortisol",
-    to: "bdnf",
-    type: "suppresses",
-    description: "Chronic cortisol reduces BDNF and hippocampal neurogenesis",
-  },
-  {
-    from: "glymphatic",
-    to: "bdnf",
-    type: "supports",
-    description: "Quality sleep supports BDNF production and brain health",
-  },
-  {
-    from: "cortisol",
-    to: "glymphatic",
-    type: "suppresses",
-    description: "Stress hormones impair deep sleep and glymphatic clearance",
-  },
-];
 
 interface ChemicalInteractionMapProps {
   scores: ChemicalScores;
