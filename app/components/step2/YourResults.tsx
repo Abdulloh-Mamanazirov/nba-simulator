@@ -6,6 +6,7 @@ import {
   calculateMonocultureIndex,
   generateNarrative,
 } from "@/lib/scoring";
+import { generatePossibleOutcomes } from "@/lib/outcomes";
 import BandwidthScore from "./BandwidthScore";
 import SpectrumVisualizer from "./SpectrumVisualizer";
 import DynorphinCallout from "./DynorphinCallout";
@@ -13,6 +14,7 @@ import ConditionMeters from "./ConditionMeters";
 import ChemicalAccordion from "./ChemicalAccordion";
 import MonocultureScore from "./MonocultureScore";
 import NarrativeSummary from "./NarrativeSummary";
+import PossibleOutcomes from "./PossibleOutcomes";
 import ChemicalInteractionMap from "./ChemicalInteractionMap";
 
 interface YourResultsProps {
@@ -33,6 +35,11 @@ export default function YourResults({
   const conditionScores = calculateConditionScores(ratings);
   const monocultureIndex = calculateMonocultureIndex(scores);
   const narrative = generateNarrative(scores, bandwidth, conditionScores);
+  const possibleOutcomes = generatePossibleOutcomes(
+    scores,
+    conditionScores,
+    bandwidth
+  );
 
   return (
     <div className="animate-fade-up space-y-6 sm:space-y-8">
@@ -59,6 +66,9 @@ export default function YourResults({
         />
         <MonocultureScore index={monocultureIndex} />
       </div>
+
+      {/* Possible Outcomes — probabilistic, experiential read of the profile */}
+      <PossibleOutcomes outcomes={possibleOutcomes} />
 
       {/* Chemical Interaction Map */}
       <ChemicalInteractionMap scores={scores} />
