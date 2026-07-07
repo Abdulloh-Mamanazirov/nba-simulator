@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback } from "react";
 import {
   calculateChemicalScores,
   calculateBandwidth,
+  calculateConditionScores,
   type Ratings,
 } from "@/lib/scoring";
 import { saveResult } from "@/lib/storage";
@@ -12,6 +13,7 @@ import { getCopy } from "@/lib/copy";
 import StepIndicator from "./components/StepIndicator";
 import ThemeToggle from "./components/ThemeToggle";
 import LanguageToggle from "./components/LanguageToggle";
+import ActionChatWidget from "./components/ActionChatWidget";
 import RateYourWeek from "./components/step1/RateYourWeek";
 import YourResults from "./components/step2/YourResults";
 import YourPrescription from "./components/step3/YourPrescription";
@@ -25,6 +27,10 @@ export default function Home() {
 
   const scores = useMemo(() => calculateChemicalScores(ratings), [ratings]);
   const bandwidth = useMemo(() => calculateBandwidth(scores), [scores]);
+  const conditionScores = useMemo(
+    () => calculateConditionScores(ratings),
+    [ratings],
+  );
 
   const handleRatingChange = useCallback(
     (activityId: string, rating: number) => {
@@ -139,6 +145,9 @@ export default function Home() {
           </p>
         </div>
       </footer>
+
+      {/* Floating "optimize any action" assistant — available on every step */}
+      <ActionChatWidget scores={scores} conditions={conditionScores} />
     </div>
   );
 }

@@ -109,6 +109,10 @@ interface UICopy {
   optimizerLoading: string;
   optimizerEases: string;
   optimizerRetry: string;
+  chatSubtitle: string;
+  chatWelcome: string;
+  chatClear: string;
+  chatOpen: string;
   // prescription
   rxTitle: string;
   rxIntro: string;
@@ -177,6 +181,11 @@ const COPY: Record<LanguageMode, UICopy> = {
     optimizerLoading: "Finding the best way…",
     optimizerEases: "Eases:",
     optimizerRetry: "Try again",
+    chatSubtitle: "Tuned to your profile",
+    chatWelcome:
+      "Hi! Tell me anything you're about to do — a chore, a task, a hangout — and I'll suggest a way to do it that's better for your brain.",
+    chatClear: "Clear",
+    chatOpen: "Optimize an action",
     rxTitle: "Your Next Steps",
     rxIntro:
       "The few changes that would do the most for you, in order. Start at the top — these are your highest-impact moves.",
@@ -246,6 +255,11 @@ const COPY: Record<LanguageMode, UICopy> = {
     optimizerLoading: "Computing optimal protocol…",
     optimizerEases: "Cools:",
     optimizerRetry: "Retry",
+    chatSubtitle: "Grounded in your profile",
+    chatWelcome:
+      "Enter any action and I'll return a modified protocol for performing it — optimised against your most depleted systems.",
+    chatClear: "Clear",
+    chatOpen: "Transduce an action",
     rxTitle: "Your Prescription",
     rxIntro:
       "The specific changes that would most expand your neurochemical range, ranked by impact. These are not suggestions — they are the highest-leverage interventions for your particular profile.",
