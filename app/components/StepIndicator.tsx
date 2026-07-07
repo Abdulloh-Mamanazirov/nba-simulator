@@ -1,22 +1,23 @@
 "use client";
 
+import { useLanguage } from "@/lib/language";
+import { getCopy } from "@/lib/copy";
+
 interface StepIndicatorProps {
   currentStep: number;
   onStepClick?: (step: number) => void;
   maxReachedStep: number;
 }
 
-const STEPS = [
-  { num: 1, label: "Rate" },
-  { num: 2, label: "Results" },
-  { num: 3, label: "Prescription" },
-];
-
 export default function StepIndicator({
   currentStep,
   onStepClick,
   maxReachedStep,
 }: StepIndicatorProps) {
+  const { mode } = useLanguage();
+  const labels = getCopy(mode).stepLabels;
+  const STEPS = labels.map((label, i) => ({ num: i + 1, label }));
+
   return (
     <div className="flex items-center gap-1 sm:gap-2">
       {STEPS.map((step, i) => {

@@ -1,6 +1,8 @@
 "use client";
 
 import type { Prescription } from "@/lib/prescriptions";
+import { useLanguage } from "@/lib/language";
+import { getCopy } from "@/lib/copy";
 
 interface PrescriptionCardProps {
   prescription: Prescription;
@@ -11,6 +13,8 @@ export default function PrescriptionCard({
   prescription,
   index,
 }: PrescriptionCardProps) {
+  const { mode } = useLanguage();
+  const copy = getCopy(mode);
   return (
     <div
       className="card p-5 sm:p-6 animate-fade-up"
@@ -27,7 +31,7 @@ export default function PrescriptionCard({
               #{index + 1}
             </span>
             <span className="text-xs font-bold text-[var(--success)]">
-              +{prescription.rangeGain.toFixed(1)} range
+              +{prescription.rangeGain.toFixed(1)} {copy.rangeUnit}
             </span>
           </div>
           <h3 className="text-base sm:text-lg font-bold text-[var(--text)]">
@@ -39,7 +43,7 @@ export default function PrescriptionCard({
       {/* Target frequency */}
       <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg bg-[var(--bg-card-2)] border border-[var(--border)]">
         <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-dim)]">
-          Target:
+          {copy.targetLabel}
         </span>
         <span className="text-sm font-medium text-[var(--text)]">
           {prescription.targetFrequency}
@@ -50,7 +54,7 @@ export default function PrescriptionCard({
       {prescription.unlockedChemicals.length > 0 && (
         <div className="mb-4">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-dim)] block mb-2">
-            Would unlock:
+            {copy.unlockLabel}
           </span>
           <div className="flex flex-wrap gap-1.5">
             {prescription.unlockedChemicals.map((chem) => (
@@ -67,7 +71,7 @@ export default function PrescriptionCard({
                   className="w-1.5 h-1.5 rounded-full"
                   style={{ backgroundColor: chem.color }}
                 />
-                {chem.plainName}
+                {mode === "plain" ? chem.plainName : chem.name}
               </span>
             ))}
           </div>

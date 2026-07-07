@@ -4,6 +4,8 @@ import { useState } from "react";
 import { CHEMICALS } from "@/lib/chemicals";
 import { CHEMICAL_INTERACTIONS as INTERACTIONS } from "@/lib/interactions";
 import type { ChemicalScores } from "@/lib/scoring";
+import { useLanguage } from "@/lib/language";
+import { getCopy, chemPrimary, interactionText } from "@/lib/copy";
 
 interface ChemicalInteractionMapProps {
   scores: ChemicalScores;
@@ -12,6 +14,8 @@ interface ChemicalInteractionMapProps {
 export default function ChemicalInteractionMap({
   scores,
 }: ChemicalInteractionMapProps) {
+  const { mode } = useLanguage();
+  const copy = getCopy(mode);
   const [hoveredChem, setHoveredChem] = useState<string | null>(null);
 
   // Position chemicals in a circle
@@ -40,10 +44,10 @@ export default function ChemicalInteractionMap({
   return (
     <div className="card p-4 sm:p-6">
       <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)] mb-1">
-        Chemical Interaction Map
+        {copy.mapTitle}
       </h2>
       <p className="text-xs text-[var(--text-dim)] mb-4">
-        How your chemical systems affect each other. Hover a node to highlight connections.
+        {copy.mapIntro}
       </p>
 
       <div className="flex justify-center overflow-x-auto">
@@ -157,9 +161,10 @@ export default function ChemicalInteractionMap({
                   fontFamily="Inter, sans-serif"
                   fontWeight="500"
                 >
-                  {pos.chemical.name.length > 10
-                    ? pos.chemical.name.slice(0, 8) + "."
-                    : pos.chemical.name}
+                  {(() => {
+                    const label = chemPrimary(pos.chemical, mode);
+                    return label.length > 10 ? label.slice(0, 8) + "." : label;
+                  })()}
                 </text>
               </g>
             );
@@ -171,11 +176,11 @@ export default function ChemicalInteractionMap({
       <div className="flex justify-center gap-6 mt-4">
         <div className="flex items-center gap-1.5">
           <div className="w-6 h-px bg-[var(--danger)]" />
-          <span className="text-[10px] text-[var(--text-muted)]">Suppresses</span>
+          <span className="text-[10px] text-[var(--text-muted)]">{copy.legendSuppresses}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-6 h-px bg-[var(--success)]" />
-          <span className="text-[10px] text-[var(--text-muted)]">Supports</span>
+          <span className="text-[10px] text-[var(--text-muted)]">{copy.legendSupports}</span>
         </div>
       </div>
 
@@ -194,7 +199,7 @@ export default function ChemicalInteractionMap({
               >
                 {int.type === "suppresses" ? "⊘" : "⊕"}
               </span>{" "}
-              {int.description}
+              {interactionText(int, mode)}
             </p>
           ))}
         </div>

@@ -1,12 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/lib/language";
+import { getCopy, bandwidthLevel } from "@/lib/copy";
 
 interface BandwidthScoreProps {
   bandwidth: number;
 }
 
 export default function BandwidthScore({ bandwidth }: BandwidthScoreProps) {
+  const { mode } = useLanguage();
+  const copy = getCopy(mode);
   const [displayed, setDisplayed] = useState(0);
 
   useEffect(() => {
@@ -28,19 +32,13 @@ export default function BandwidthScore({ bandwidth }: BandwidthScoreProps) {
     return "var(--success)";
   };
 
-  const getLabel = () => {
-    if (bandwidth <= 2) return "Critically Narrow";
-    if (bandwidth <= 4) return "Constricted";
-    if (bandwidth <= 6) return "Moderate";
-    if (bandwidth <= 8) return "Broad";
-    return "Full Range";
-  };
+  const getLabel = () => bandwidthLevel(bandwidth, mode);
 
   return (
     <div className="text-center animate-count-up">
       <div className="mb-2">
         <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
-          Neurochemical Bandwidth
+          {copy.bandwidthKicker}
         </span>
       </div>
       <div className="flex items-baseline justify-center gap-2 font-serif">
@@ -55,7 +53,7 @@ export default function BandwidthScore({ bandwidth }: BandwidthScoreProps) {
         </span>
       </div>
       <p className="text-sm sm:text-base text-[var(--text-muted)] mt-1 font-serif">
-        neglected channels active
+        {copy.bandwidthUnit}
       </p>
       <div
         className="mt-3 inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider"

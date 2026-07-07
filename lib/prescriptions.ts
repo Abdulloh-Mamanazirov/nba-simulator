@@ -7,6 +7,7 @@ import {
   type Ratings,
   type ChemicalScores,
 } from "./scoring";
+import type { LanguageMode } from "./language";
 
 export interface Prescription {
   activityId: string;
@@ -82,6 +83,11 @@ function mostDepletedBy(activity: Activity): Chemical | null {
  * (increase to Daily, or reduce to Never). Returns null if the move produces
  * no meaningful gain in the user's continuous neurochemical range.
  */
+/** "Deep Calm (Allopregnanolone)" in science mode, just "Deep Calm" in plain. */
+function chemName(c: Chemical, plain: boolean): string {
+  return plain ? c.plainName : `${c.plainName} (${c.name})`;
+}
+
 function buildCandidate(
   activity: Activity,
   direction: "increase" | "reduce",
@@ -89,8 +95,10 @@ function buildCandidate(
   currentScores: ChemicalScores,
   currentBandwidth: number,
   currentRange: number,
-  lowestNeglected: ScoredChemical[]
+  lowestNeglected: ScoredChemical[],
+  mode: LanguageMode
 ): Prescription | null {
+  const plain = mode === "plain";
   const simulatedRating = direction === "increase" ? 4 : 0;
   const simulatedRatings = { ...ratings, [activity.id]: simulatedRating };
   const simulatedScores = calculateChemicalScores(simulatedRatings);
@@ -131,21 +139,29 @@ function buildCandidate(
 
     activityName = activity.name;
     targetFrequency = increaseTargetFrequency(activity);
-    personalizedSentence = `Your ${best.plainName} (${best.name}) is at ${chemScore}/100. ${activity.name} is ${
-      isPrimary ? "its primary and most direct activator" : "one of its key activators"
-    }.`;
+    personalizedSentence = plain
+      ? `Your ${best.plainName} is only ${chemScore}/100. ${activity.name} is ${
+          isPrimary ? "the most direct way to lift it" : "one of the best ways to lift it"
+        }.`
+      : `Your ${best.plainName} (${best.name}) is at ${chemScore}/100. ${activity.name} is ${
+          isPrimary ? "its primary and most direct activator" : "one of its key activators"
+        }.`;
   } else {
-    activityName = `Reduce ${activity.name}`;
-    targetFrequency = "Cut to never or monthly";
+    activityName = plain ? `Cut back on ${activity.name}` : `Reduce ${activity.name}`;
+    targetFrequency = plain ? "Cut to never or once a month" : "Cut to never or monthly";
 
     if (activity.id === "alcohol") {
       const depleted = mostDepletedBy(activity) ?? lowestNeglected[0];
       const chemScore = currentScores[depleted.id] ?? 0;
-      personalizedSentence = `Alcohol artificially hijacks GABA receptors and suppresses glymphatic clearance. Reducing intake would allow your ${depleted.plainName} (${depleted.name}) to recover from ${chemScore}/100.`;
+      personalizedSentence = plain
+        ? `Alcohol fakes calm and wrecks the deep sleep that cleans your brain. Cutting back would let your ${depleted.plainName} recover from ${chemScore}/100.`
+        : `Alcohol artificially hijacks GABA receptors and suppresses glymphatic clearance. Reducing intake would allow your ${chemName(depleted, false)} to recover from ${chemScore}/100.`;
     } else {
       const depleted = mostDepletedBy(activity) ?? lowestNeglected[0];
       const chemScore = currentScores[depleted.id] ?? 0;
-      personalizedSentence = `${activity.name} is one of the strongest suppressors of your ${depleted.plainName} (${depleted.name}), currently at ${chemScore}/100. Reducing it is one of the most direct ways to bring that system back online.`;
+      personalizedSentence = plain
+        ? `${activity.name} is one of the biggest drains on your ${depleted.plainName}, now at ${chemScore}/100. Cutting back is one of the quickest ways to bring it back.`
+        : `${activity.name} is one of the strongest suppressors of your ${chemName(depleted, false)}, currently at ${chemScore}/100. Reducing it is one of the most direct ways to bring that system back online.`;
     }
   }
 
@@ -173,7 +189,8 @@ function buildCandidate(
 export function generatePrescriptions(
   ratings: Ratings,
   currentScores: ChemicalScores,
-  currentBandwidth: number
+  currentBandwidth: number,
+  mode: LanguageMode = "science"
 ): Prescription[] {
   const currentRange = calculateContinuousBandwidth(currentScores);
 
@@ -197,7 +214,8 @@ export function generatePrescriptions(
         currentScores,
         currentBandwidth,
         currentRange,
-        lowestNeglected
+        lowestNeglected,
+        mode
       );
       if (c) options.push(c);
     }
@@ -212,7 +230,8 @@ export function generatePrescriptions(
         currentScores,
         currentBandwidth,
         currentRange,
-        lowestNeglected
+        lowestNeglected,
+        mode
       );
       if (c) options.push(c);
     }

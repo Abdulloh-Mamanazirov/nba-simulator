@@ -1,10 +1,14 @@
 "use client";
 
+import { useLanguage } from "@/lib/language";
+import { getCopy } from "@/lib/copy";
+
 interface NarrativeSummaryProps {
   narrative: string;
 }
 
 export default function NarrativeSummary({ narrative }: NarrativeSummaryProps) {
+  const { mode } = useLanguage();
   return (
     <div className="card p-5 sm:p-8 relative overflow-hidden">
       {/* Subtle background */}
@@ -20,7 +24,7 @@ export default function NarrativeSummary({ narrative }: NarrativeSummaryProps) {
         <div className="flex items-center gap-2 mb-4">
           <div className="w-6 h-px bg-[var(--gold)]" />
           <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--gold-dim)]">
-            Neurochemical Narrative
+            {getCopy(mode).narrativeKicker}
           </span>
           <div className="flex-1 h-px bg-[var(--gold)]/20" />
         </div>

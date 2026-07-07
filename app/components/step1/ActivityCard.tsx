@@ -3,6 +3,8 @@
 import type { Activity, ImpactChip } from "@/lib/activities";
 import { FREQUENCY_LABELS } from "@/lib/activities";
 import { getChemical } from "@/lib/chemicals";
+import { useLanguage } from "@/lib/language";
+import { chemPrimary } from "@/lib/copy";
 
 interface ActivityCardProps {
   activity: Activity;
@@ -11,6 +13,7 @@ interface ActivityCardProps {
 }
 
 function ImpactChipBadge({ chip }: { chip: ImpactChip }) {
+  const { mode } = useLanguage();
   const chemical = getChemical(chip.chemicalId);
   const isTriad = chemical.category === "triad";
   const isNegative = chip.direction === "down";
@@ -21,6 +24,8 @@ function ImpactChipBadge({ chip }: { chip: ImpactChip }) {
     chip.direction === "up"
       ? "↑".repeat(chip.strength)
       : "↓".repeat(chip.strength);
+
+  const label = chemPrimary(chemical, mode);
 
   return (
     <span
@@ -34,7 +39,7 @@ function ImpactChipBadge({ chip }: { chip: ImpactChip }) {
       `}
     >
       <span>{arrows}</span>
-      <span>{chemical.name.length > 10 ? chemical.name.slice(0, 8) + "." : chemical.name}</span>
+      <span>{label.length > 10 ? label.slice(0, 8) + "." : label}</span>
     </span>
   );
 }

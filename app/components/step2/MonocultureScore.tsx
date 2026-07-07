@@ -1,39 +1,35 @@
 "use client";
 
+import { useLanguage } from "@/lib/language";
+import { getCopy, monocultureLabel, monocultureExplanation } from "@/lib/copy";
+
 interface MonocultureScoreProps {
   index: number;
 }
 
-function getExplanation(index: number): string {
-  if (index >= 60)
-    return "Almost all your neurochemical activity is concentrated in a few systems. The rest are functionally silent.";
-  if (index >= 40)
-    return "Your range is narrow — a few systems dominate while many others sit idle.";
-  if (index >= 25)
-    return "Some concentration is present, but activity is starting to spread across systems.";
-  if (index >= 10)
-    return "Your neurochemical activity is reasonably distributed across multiple systems.";
-  return "Activity is well-spread — you're using a broad range of your available neurochemistry.";
-}
-
 export default function MonocultureScore({ index }: MonocultureScoreProps) {
-  const getLevel = () => {
-    if (index >= 60) return { label: "Severe", color: "var(--danger)" };
-    if (index >= 40) return { label: "High", color: "var(--chem-dopamine)" };
-    if (index >= 25) return { label: "Moderate", color: "var(--gold)" };
-    if (index >= 10) return { label: "Low", color: "var(--success)" };
-    return { label: "Minimal", color: "var(--chem-gaba)" };
-  };
+  const { mode } = useLanguage();
+  const copy = getCopy(mode);
 
-  const level = getLevel();
+  const levelColor =
+    index >= 60
+      ? "var(--danger)"
+      : index >= 40
+        ? "var(--chem-dopamine)"
+        : index >= 25
+          ? "var(--gold)"
+          : index >= 10
+            ? "var(--success)"
+            : "var(--chem-gaba)";
+  const level = { label: monocultureLabel(index, mode), color: levelColor };
 
   return (
     <div className="card p-4 sm:p-6">
       <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)] mb-1">
-        Range Concentration
+        {copy.monoTitle}
       </h2>
       <p className="text-xs text-[var(--text-dim)] mb-4 leading-relaxed">
-        Are you running on many systems or just a few? Higher = more concentrated (worse).
+        {copy.monoIntro}
       </p>
 
       <div className="flex items-center gap-4">
@@ -84,7 +80,7 @@ export default function MonocultureScore({ index }: MonocultureScoreProps) {
 
       {/* Explanation */}
       <p className="text-xs font-serif italic text-[var(--text-muted)] mt-4 leading-relaxed">
-        {getExplanation(index)}
+        {monocultureExplanation(index, mode)}
       </p>
     </div>
   );

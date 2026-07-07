@@ -5,6 +5,8 @@ import type {
   OutcomeTone,
   OutcomeLikelihood,
 } from "@/lib/outcomes";
+import { useLanguage } from "@/lib/language";
+import { getCopy } from "@/lib/copy";
 
 interface PossibleOutcomesProps {
   outcomes: PossibleOutcome[];
@@ -60,6 +62,8 @@ function LikelihoodPill({
 }
 
 export default function PossibleOutcomes({ outcomes }: PossibleOutcomesProps) {
+  const { mode } = useLanguage();
+  const copy = getCopy(mode);
   if (outcomes.length === 0) return null;
 
   return (
@@ -78,7 +82,7 @@ export default function PossibleOutcomes({ outcomes }: PossibleOutcomesProps) {
         <div className="flex items-center gap-2 mb-2">
           <div className="w-6 h-px bg-[var(--gold)]" />
           <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--gold-dim)]">
-            Possible Outcomes
+            {copy.outcomesKicker}
           </span>
           <div className="flex-1 h-px bg-[var(--gold)]/20" />
         </div>
@@ -118,7 +122,7 @@ export default function PossibleOutcomes({ outcomes }: PossibleOutcomesProps) {
                 {outcome.drivers.length > 0 && (
                   <div className="flex flex-wrap items-center gap-1.5 mt-3">
                     <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-dim)] mr-0.5">
-                      Driven by:
+                      {copy.drivenBy}
                     </span>
                     {outcome.drivers.map((d) => (
                       <span
@@ -129,13 +133,13 @@ export default function PossibleOutcomes({ outcomes }: PossibleOutcomesProps) {
                           backgroundColor: `color-mix(in srgb, ${d.color} 12%, transparent)`,
                           border: `1px solid color-mix(in srgb, ${d.color} 25%, transparent)`,
                         }}
-                        title={d.name}
+                        title={mode === "plain" ? d.name : d.plainName}
                       >
                         <span
                           className="w-1.5 h-1.5 rounded-full"
                           style={{ backgroundColor: d.color }}
                         />
-                        {d.plainName}
+                        {mode === "plain" ? d.plainName : d.name}
                       </span>
                     ))}
                   </div>

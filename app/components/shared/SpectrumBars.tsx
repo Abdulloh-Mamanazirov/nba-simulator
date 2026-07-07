@@ -2,6 +2,8 @@
 
 import { CHEMICALS, TRIAD_CHEMICALS, NEGLECTED_CHEMICALS } from "@/lib/chemicals";
 import type { ChemicalScores } from "@/lib/scoring";
+import { useLanguage } from "@/lib/language";
+import { getCopy, chemPrimary } from "@/lib/copy";
 
 interface SpectrumBarsProps {
   scores: ChemicalScores;
@@ -26,7 +28,11 @@ export default function SpectrumBars({
   onBarClick,
   className = "",
 }: SpectrumBarsProps) {
+  const { mode } = useLanguage();
+  const copy = getCopy(mode);
+
   const renderBar = (chem: (typeof CHEMICALS)[0], i: number) => {
+    const label = chemPrimary(chem, mode);
     const score = scores[chem.id] ?? chem.baseScore;
     const barHeight = (score / 100) * height;
     const isTriad = chem.category === "triad";
@@ -72,7 +78,7 @@ export default function SpectrumBars({
         {showLabels && !compact && (
           <div className="text-center w-full mt-1.5">
             <span className="text-[9px] sm:text-[10px] font-medium text-[var(--text-muted)] leading-none block truncate px-0.5">
-              {chem.name.length > 8 ? chem.name.slice(0, 7) + "." : chem.name}
+              {label.length > 8 ? label.slice(0, 7) + "." : label}
             </span>
             <span
               className="text-[10px] sm:text-xs font-bold block mt-0.5"
@@ -98,7 +104,7 @@ export default function SpectrumBars({
               style={{ bottom: `${(68 / 100) * height + 4}px` }}
             >
               <span className="absolute -top-4 right-0 text-[9px] font-medium text-[var(--danger)]/60 tracking-wider uppercase">
-                Overdriven
+                {copy.thresholdOverdriven}
               </span>
             </div>
             <div
@@ -106,7 +112,7 @@ export default function SpectrumBars({
               style={{ bottom: `${(35 / 100) * height + 4}px` }}
             >
               <span className="absolute -top-4 right-0 text-[9px] font-medium text-[var(--text-muted)]/50 tracking-wider uppercase">
-                Starvation
+                {copy.thresholdStarvation}
               </span>
             </div>
           </>
@@ -119,7 +125,7 @@ export default function SpectrumBars({
               {TRIAD_CHEMICALS.map((c, i) => renderBar(c, i))}
             </div>
             <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-[var(--text-dim)] mt-3 text-center">
-              Dominant Triad
+              {copy.groupTriad}
             </span>
           </div>
 
@@ -132,7 +138,7 @@ export default function SpectrumBars({
               {NEGLECTED_CHEMICALS.map((c, i) => renderBar(c, i + 3))}
             </div>
             <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-[var(--text-dim)] mt-3 text-center">
-              Neglected Architecture
+              {copy.groupNeglected}
             </span>
           </div>
         </div>
@@ -150,7 +156,7 @@ export default function SpectrumBars({
             style={{ bottom: `${(68 / 100) * height + 4}px` }}
           >
             <span className="absolute -top-4 right-0 text-[9px] font-medium text-[var(--danger)]/60 tracking-wider uppercase">
-              Overdriven
+              {copy.thresholdOverdriven}
             </span>
           </div>
           <div
@@ -158,7 +164,7 @@ export default function SpectrumBars({
             style={{ bottom: `${(35 / 100) * height + 4}px` }}
           >
             <span className="absolute -top-4 right-0 text-[9px] font-medium text-[var(--text-muted)]/50 tracking-wider uppercase">
-              Starvation
+              {copy.thresholdStarvation}
             </span>
           </div>
         </>

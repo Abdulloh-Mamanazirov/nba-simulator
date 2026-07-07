@@ -7,6 +7,8 @@ import {
   generateNarrative,
 } from "@/lib/scoring";
 import { generatePossibleOutcomes } from "@/lib/outcomes";
+import { useLanguage } from "@/lib/language";
+import { getCopy } from "@/lib/copy";
 import BandwidthScore from "./BandwidthScore";
 import SpectrumVisualizer from "./SpectrumVisualizer";
 import DynorphinCallout from "./DynorphinCallout";
@@ -32,9 +34,11 @@ export default function YourResults({
   onNext,
   onBack,
 }: YourResultsProps) {
+  const { mode } = useLanguage();
+  const copy = getCopy(mode);
   const conditionScores = calculateConditionScores(ratings);
   const monocultureIndex = calculateMonocultureIndex(scores);
-  const narrative = generateNarrative(scores, bandwidth, conditionScores);
+  const narrative = generateNarrative(scores, bandwidth, conditionScores, mode);
   const possibleOutcomes = generatePossibleOutcomes(
     scores,
     conditionScores,
@@ -85,7 +89,7 @@ export default function YourResults({
                      hover:border-[var(--border-light)] hover:text-[var(--text)]
                      transition-all duration-200 w-full sm:w-auto"
         >
-          ← Edit Ratings
+          {copy.editRatings}
         </button>
 
         <button
@@ -97,7 +101,7 @@ export default function YourResults({
                      hover:shadow-[0_0_40px_rgba(232,181,90,0.5)] hover:scale-[1.02]
                      active:scale-[0.98] transition-all duration-300 w-full sm:w-auto text-center"
         >
-          Get My Prescription →
+          {copy.getPrescription}
         </button>
       </div>
     </div>

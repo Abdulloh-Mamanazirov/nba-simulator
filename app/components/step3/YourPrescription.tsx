@@ -1,12 +1,18 @@
 "use client";
 
 import type { Ratings, ChemicalScores } from "@/lib/scoring";
+import { calculateConditionScores } from "@/lib/scoring";
 import {
   generatePrescriptions,
   calculateProjectedScores,
 } from "@/lib/prescriptions";
+import { generateTransducers } from "@/lib/transducers";
+import { useLanguage } from "@/lib/language";
+import { getCopy } from "@/lib/copy";
 import PrescriptionCard from "./PrescriptionCard";
 import BeforeAfterSpectrum from "./BeforeAfterSpectrum";
+import EverydayUpgrades from "./EverydayUpgrades";
+import ActionOptimizer from "./ActionOptimizer";
 
 interface YourPrescriptionProps {
   ratings: Ratings;
@@ -23,22 +29,30 @@ export default function YourPrescription({
   onBack,
   onRestart,
 }: YourPrescriptionProps) {
-  const prescriptions = generatePrescriptions(ratings, scores, bandwidth);
+  const { mode } = useLanguage();
+  const copy = getCopy(mode);
+  const prescriptions = generatePrescriptions(ratings, scores, bandwidth, mode);
   const projected = calculateProjectedScores(ratings, prescriptions);
+  const conditionScores = calculateConditionScores(ratings);
+  const transducers = generateTransducers(scores, conditionScores);
 
   return (
     <div className="animate-fade-up space-y-6 sm:space-y-8">
       {/* Header */}
       <div className="text-center py-4 sm:py-8">
         <h1 className="text-2xl sm:text-4xl font-serif font-bold text-[var(--text)] mb-3">
-          Your Prescription
+          {copy.rxTitle}
         </h1>
         <p className="text-sm sm:text-base text-[var(--text-muted)] max-w-2xl mx-auto leading-relaxed">
-          The specific changes that would most expand your neurochemical range,
-          ranked by impact. These are not suggestions — they are the
-          highest-leverage interventions for your particular profile.
+          {copy.rxIntro}
         </p>
       </div>
+
+      {/* Optimize any action the user types (AI) */}
+      <ActionOptimizer scores={scores} conditions={conditionScores} />
+
+      {/* Everyday Upgrades (transducers) — friction-free on-ramp */}
+      <EverydayUpgrades picks={transducers} />
 
       {/* Prescription Cards */}
       {prescriptions.length > 0 ? (
@@ -51,8 +65,7 @@ export default function YourPrescription({
         <div className="card p-8 text-center">
           <span className="text-4xl mb-4 block">🎯</span>
           <p className="text-base font-serif text-[var(--text)]">
-            Your bandwidth is already at or near maximum. Focus on deepening
-            individual systems rather than broadening.
+            {copy.rxEmpty}
           </p>
         </div>
       )}
@@ -78,10 +91,7 @@ export default function YourPrescription({
         />
         <div className="relative">
           <p className="text-sm sm:text-base font-serif italic text-[var(--text-muted)] leading-relaxed max-w-2xl mx-auto">
-            This is a diagnostic instrument, not a motivational tool. The
-            systems described here are real, peer-reviewed neurochemistry. The
-            environment that degrades them is also real. Whether and how you
-            respond is entirely your own.
+            {copy.closingNote}
           </p>
         </div>
       </div>
@@ -95,7 +105,7 @@ export default function YourPrescription({
                      hover:border-[var(--border-light)] hover:text-[var(--text)]
                      transition-all duration-200"
         >
-          ← Back to Results
+          {copy.backToResults}
         </button>
 
         <button
@@ -106,7 +116,7 @@ export default function YourPrescription({
                      hover:border-[var(--gold)] hover:text-[var(--gold)]
                      transition-all duration-300"
         >
-          Retake Audit
+          {copy.retake}
         </button>
       </div>
     </div>

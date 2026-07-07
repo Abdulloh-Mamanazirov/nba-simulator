@@ -1,47 +1,34 @@
 "use client";
 
+import { useLanguage } from "@/lib/language";
+import {
+  getCopy,
+  conditionLabel,
+  conditionTooltip,
+  conditionInsight,
+} from "@/lib/copy";
+import type { LanguageMode } from "@/lib/language";
+
+type Condition = "slowness" | "embodiment" | "attention";
+
 interface ConditionMetersProps {
   slowness: number;
   embodiment: number;
   attention: number;
 }
 
-const tooltipText: Record<string, string> = {
-  Slowness: "A psychological state characterized by intentional deceleration, reduced cognitive load, and deliberate pacing, essential for parasympathetic recovery.",
-  Embodiment: "The subjective experience of being grounded in one's physical body, involving sensory awareness and interoceptive sensitivity.",
-  Attention: "The ability to sustain focus on a single cognitive thread or perceptual object without fragmentation by competing stimuli.",
-};
-
-function getInsight(label: string, value: number): string {
-  if (label === "Slowness") {
-    if (value < 20) return "Your week provides almost no genuine deceleration";
-    if (value < 45) return "Some rest, but rarely the deep kind";
-    if (value < 70) return "Moderate — real stillness is present but inconsistent";
-    return "Strong — your week includes genuine slowness";
-  }
-  if (label === "Embodiment") {
-    if (value < 20) return "Very little physical reality in your routine";
-    if (value < 45) return "Some movement, but your body is mostly sidelined";
-    if (value < 70) return "Moderate — regular physical engagement";
-    return "Strong — your body is central to your week";
-  }
-  // Attention
-  if (value < 20) return "Attention is highly fragmented — rarely on one thing";
-  if (value < 45) return "Some depth, but fragmentation is dominant";
-  if (value < 70) return "Moderate — focused work happens but competes with distraction";
-  return "Strong — sustained attention is a regular part of your week";
-}
-
 function Ring({
+  cond,
   value,
-  label,
   color,
   delay,
+  mode,
 }: {
+  cond: Condition;
   value: number;
-  label: string;
   color: string;
   delay: number;
+  mode: LanguageMode;
 }) {
   const radius = 40;
   const circumference = 2 * Math.PI * radius;
@@ -94,9 +81,9 @@ function Ring({
         </div>
       </div>
       <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] group relative cursor-help">
-        {label}
+        {conditionLabel(cond, mode)}
         <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-[var(--bg-card-2)] text-[var(--text)] text-[10px] sm:text-xs p-2 rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 font-normal normal-case tracking-normal">
-          {tooltipText[label]}
+          {conditionTooltip(cond, mode)}
         </span>
       </span>
     </div>
@@ -108,11 +95,13 @@ export default function ConditionMeters({
   embodiment,
   attention,
 }: ConditionMetersProps) {
-  // Find the lowest condition for emphasis
-  const conditions = [
-    { label: "Slowness", value: slowness, color: "#38D39F" },
-    { label: "Embodiment", value: embodiment, color: "#63B3ED" },
-    { label: "Attention", value: attention, color: "#7F9CF5" },
+  const { mode } = useLanguage();
+  const copy = getCopy(mode);
+
+  const conditions: { key: Condition; value: number; color: string }[] = [
+    { key: "slowness", value: slowness, color: "#38D39F" },
+    { key: "embodiment", value: embodiment, color: "#63B3ED" },
+    { key: "attention", value: attention, color: "#7F9CF5" },
   ];
   const lowest = conditions.reduce((a, b) => (a.value < b.value ? a : b));
   const allEqual = conditions.every((c) => c.value === conditions[0].value);
@@ -120,15 +109,23 @@ export default function ConditionMeters({
   return (
     <div className="card p-4 sm:p-6">
       <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)] mb-1">
-        What Your Week Provides
+        {copy.conditionsTitle}
       </h2>
       <p className="text-xs text-[var(--text-dim)] mb-6 leading-relaxed">
-        All nine neglected systems need one of these three conditions to activate.
+        {copy.conditionsLead}
         {allEqual ? (
-          <span className="font-semibold text-[var(--text-muted)]"> Your conditions are perfectly balanced.</span>
+          <span className="font-semibold text-[var(--text-muted)]">
+            {" "}
+            {copy.conditionsBalanced}
+          </span>
         ) : (
           <>
-            {" "}Your lowest is <span className="font-semibold text-[var(--text-muted)]">{lowest.label.toLowerCase()}</span>.
+            {" "}
+            {copy.conditionsLowestPrefix}{" "}
+            <span className="font-semibold text-[var(--text-muted)]">
+              {conditionLabel(lowest.key, mode).toLowerCase()}
+            </span>
+            .
           </>
         )}
       </p>
@@ -136,18 +133,19 @@ export default function ConditionMeters({
       <div className="flex justify-center gap-6 sm:gap-10">
         {conditions.map((c, i) => (
           <Ring
-            key={c.label}
+            key={c.key}
+            cond={c.key}
             value={c.value}
-            label={c.label}
             color={c.color}
             delay={0.2 + i * 0.2}
+            mode={mode}
           />
         ))}
       </div>
 
       {/* Insight for the lowest condition */}
       <p className="text-xs font-serif italic text-[var(--text-muted)] text-center mt-5 leading-relaxed">
-        {getInsight(lowest.label, lowest.value)}
+        {conditionInsight(lowest.key, lowest.value, mode)}
       </p>
     </div>
   );

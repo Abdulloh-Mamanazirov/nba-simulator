@@ -3,12 +3,23 @@
 import { useState } from "react";
 import { CHEMICALS } from "@/lib/chemicals";
 import type { ChemicalScores } from "@/lib/scoring";
+import { useLanguage } from "@/lib/language";
+import {
+  getCopy,
+  chemPrimary,
+  chemSecondary,
+  chemDescription,
+  chemDetail,
+  conditionLabel,
+} from "@/lib/copy";
 
 interface ChemicalAccordionProps {
   scores: ChemicalScores;
 }
 
 export default function ChemicalAccordion({ scores }: ChemicalAccordionProps) {
+  const { mode } = useLanguage();
+  const copy = getCopy(mode);
   const [isOpen, setIsOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
 
@@ -22,10 +33,10 @@ export default function ChemicalAccordion({ scores }: ChemicalAccordionProps) {
       >
         <div>
           <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)] text-left">
-            Explore All 12 Chemical Systems
+            {copy.accordionTitle}
           </h2>
           <p className="text-[10px] text-[var(--text-dim)] mt-0.5 text-left">
-            Detailed breakdown of each neurochemical system
+            {copy.accordionSub}
           </p>
         </div>
         <span
@@ -65,10 +76,10 @@ export default function ChemicalAccordion({ scores }: ChemicalAccordionProps) {
                   {/* Name and plain name */}
                   <div className="flex-1 min-w-0">
                     <span className="text-sm font-medium text-[var(--text)] block sm:inline">
-                      {chem.name}
+                      {chemPrimary(chem, mode)}
                     </span>
                     <span className="text-xs text-[var(--text-muted)] block sm:inline sm:ml-2">
-                      {chem.plainName}
+                      {chemSecondary(chem, mode)}
                     </span>
                   </div>
 
@@ -100,7 +111,7 @@ export default function ChemicalAccordion({ scores }: ChemicalAccordionProps) {
                           : "text-[var(--gold)] bg-[var(--gold)]/10"
                       }`}
                     >
-                      {isOverdriven ? "HIGH" : "LOW"}
+                      {isOverdriven ? copy.statusHigh : copy.statusLow}
                     </span>
                   )}
 
@@ -119,11 +130,13 @@ export default function ChemicalAccordion({ scores }: ChemicalAccordionProps) {
                   <div className="px-4 sm:px-5 pb-4 animate-slide-in">
                     <div className="pl-5 border-l-2 ml-0.5" style={{ borderColor: chem.color }}>
                       <p className="text-sm font-serif text-[var(--text)] leading-relaxed mb-2">
-                        {chem.description}
+                        {chemDescription(chem, mode)}
                       </p>
-                      <p className="text-xs font-serif italic text-[var(--text-muted)] leading-relaxed">
-                        {chem.scientificDetail}
-                      </p>
+                      {chemDetail(chem, mode) && (
+                        <p className="text-xs font-serif italic text-[var(--text-muted)] leading-relaxed">
+                          {chemDetail(chem, mode)}
+                        </p>
+                      )}
                       {chem.conditions.length > 0 && (
                         <div className="mt-2 flex gap-1">
                           {chem.conditions.map((cond) => (
@@ -131,7 +144,7 @@ export default function ChemicalAccordion({ scores }: ChemicalAccordionProps) {
                               key={cond}
                               className="text-[9px] font-medium px-2 py-0.5 rounded bg-[var(--bg-card-2)] text-[var(--text-muted)]"
                             >
-                              {cond.charAt(0).toUpperCase() + cond.slice(1)}
+                              {conditionLabel(cond, mode)}
                             </span>
                           ))}
                         </div>

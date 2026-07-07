@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { LanguageProvider } from "@/lib/language";
 
 export const metadata: Metadata = {
   title: "Neurochemical Bandwidth Audit",
@@ -22,7 +23,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-theme="light" suppressHydrationWarning>
-      <body className="min-h-screen antialiased">{children}</body>
+      <body className="min-h-screen antialiased">
+        <LanguageProvider>{children}</LanguageProvider>
+      </body>
     </html>
   );
 }

@@ -1,19 +1,24 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback } from "react";
 import {
   calculateChemicalScores,
   calculateBandwidth,
   type Ratings,
 } from "@/lib/scoring";
 import { saveResult } from "@/lib/storage";
+import { useLanguage } from "@/lib/language";
+import { getCopy } from "@/lib/copy";
 import StepIndicator from "./components/StepIndicator";
 import ThemeToggle from "./components/ThemeToggle";
+import LanguageToggle from "./components/LanguageToggle";
 import RateYourWeek from "./components/step1/RateYourWeek";
 import YourResults from "./components/step2/YourResults";
 import YourPrescription from "./components/step3/YourPrescription";
 
 export default function Home() {
+  const { mode } = useLanguage();
+  const copy = getCopy(mode);
   const [currentStep, setCurrentStep] = useState(1);
   const [maxReachedStep, setMaxReachedStep] = useState(1);
   const [ratings, setRatings] = useState<Ratings>({});
@@ -88,7 +93,10 @@ export default function Home() {
             onStepClick={goToStep}
           />
 
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <LanguageToggle />
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
@@ -127,8 +135,7 @@ export default function Home() {
       <footer className="border-t border-[var(--border)] py-6 mt-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-xs text-[var(--text-dim)] font-serif italic">
-            Based on research by J. Ricketts (2026). This is a diagnostic
-            instrument, not medical advice.
+            {copy.footerNote}
           </p>
         </div>
       </footer>

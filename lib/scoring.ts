@@ -6,6 +6,7 @@ import {
 } from "./chemicals";
 import { ACTIVITIES } from "./activities";
 import { CHEMICAL_INTERACTIONS } from "./interactions";
+import type { LanguageMode } from "./language";
 
 export type Ratings = Record<string, number>;
 export type ChemicalScores = Record<string, number>;
@@ -204,10 +205,12 @@ export function calculateMonocultureIndex(scores: ChemicalScores): number {
 export function generateNarrative(
   scores: ChemicalScores,
   bandwidth: number,
-  conditionScores: { slowness: number; embodiment: number; attention: number }
+  conditionScores: { slowness: number; embodiment: number; attention: number },
+  mode: LanguageMode = "science"
 ): string {
   const dopamine = scores.dopamine ?? 0;
   const cortisol = scores.cortisol ?? 0;
+  const plain = mode === "plain";
 
   // Find the lowest neglected chemicals
   const neglectedSorted = NEGLECTED_CHEMICALS.map((c) => ({
@@ -223,44 +226,68 @@ export function generateNarrative(
   // Sentence 1: What's dominating
   let s1: string;
   if (dopamine > 68 && cortisol > 68) {
-    s1 =
-      "Your brain is running predominantly on seeking drive and stress mobilization — the two systems modern life overactivates most aggressively.";
+    s1 = plain
+      ? "Right now your brain is running mostly on chasing and stress — the two things modern life cranks up the hardest."
+      : "Your brain is running predominantly on seeking drive and stress mobilization — the two systems modern life overactivates most aggressively.";
   } else if (dopamine > 68) {
-    s1 =
-      "Your neurochemical profile is dominated by seeking drive — the anticipation-reward loop that digital environments exploit most directly.";
+    s1 = plain
+      ? "Your brain is running mostly on the chase — the wanting-the-next-thing loop that phones and apps pull hardest."
+      : "Your neurochemical profile is dominated by seeking drive — the anticipation-reward loop that digital environments exploit most directly.";
   } else if (cortisol > 68) {
-    s1 =
-      "Stress mobilization is running well above its intended threshold, maintaining a chronic low-grade emergency your nervous system was never designed to sustain.";
+    s1 = plain
+      ? "Your stress system is stuck on, keeping you in a low-level emergency your body was never meant to hold all day."
+      : "Stress mobilization is running well above its intended threshold, maintaining a chronic low-grade emergency your nervous system was never designed to sustain.";
   } else {
-    s1 =
-      "Your triad systems are within moderate range — less overdriven than the statistical norm for knowledge workers.";
+    s1 = plain
+      ? "Your chasing and stress systems are only moderately busy — less cranked up than usual for busy desk work."
+      : "Your triad systems are within moderate range — less overdriven than the statistical norm for knowledge workers.";
   }
 
   // Sentence 2: What's missing
-  const lowNames = lowestTwo.map((c) => `${c.plainName} (${c.name})`);
+  const lowNames = lowestTwo.map((c) =>
+    plain ? c.plainName : `${c.plainName} (${c.name})`
+  );
   let s2: string;
   if (bandwidth <= 2) {
-    s2 = `The systems associated with ${lowNames[0]} and ${lowNames[1]} are operating well below activation threshold — effectively offline.`;
+    s2 = plain
+      ? `The systems behind ${lowNames[0]} and ${lowNames[1]} are running so low they're basically switched off.`
+      : `The systems associated with ${lowNames[0]} and ${lowNames[1]} are operating well below activation threshold — effectively offline.`;
   } else if (bandwidth <= 5) {
-    s2 = `${lowNames[0]} and ${lowNames[1]} remain your most depleted systems, operating in a range where their functional effects are minimal.`;
+    s2 = plain
+      ? `${lowNames[0]} and ${lowNames[1]} are your most depleted — low enough that you barely feel their benefits.`
+      : `${lowNames[0]} and ${lowNames[1]} remain your most depleted systems, operating in a range where their functional effects are minimal.`;
   } else {
-    s2 = `Most of your neglected architecture is online. ${lowNames[0]} remains the system with the most room for expansion.`;
+    s2 = plain
+      ? `Most of your quieter systems are online. ${lowNames[0]} has the most room left to grow.`
+      : `Most of your neglected architecture is online. ${lowNames[0]} remains the system with the most room for expansion.`;
   }
 
   // Sentence 3: The structural observation
   let s3: string;
-  const condName =
-    lowestCondition[0] === "slowness"
+  const condKey = lowestCondition[0];
+  const condName = plain
+    ? condKey === "slowness"
+      ? "slowing down"
+      : condKey === "embodiment"
+        ? "being in your body"
+        : "focus"
+    : condKey === "slowness"
       ? "slowness"
-      : lowestCondition[0] === "embodiment"
+      : condKey === "embodiment"
         ? "embodiment"
         : "sustained attention";
   if (bandwidth <= 3) {
-    s3 = `Your environment appears structurally optimised for the first group and hostile to the second — particularly in its lack of ${condName}.`;
+    s3 = plain
+      ? `Your week looks built for the first group and hostile to the second — especially in how little room it leaves for ${condName}.`
+      : `Your environment appears structurally optimised for the first group and hostile to the second — particularly in its lack of ${condName}.`;
   } else if (bandwidth <= 6) {
-    s3 = `The limiting factor is ${condName} — the activating condition your current week provides least of.`;
+    s3 = plain
+      ? `The thing holding you back most is ${condName} — the one your current week gives you least of.`
+      : `The limiting factor is ${condName} — the activating condition your current week provides least of.`;
   } else {
-    s3 = `Your current patterns provide a relatively broad neurochemical range. The remaining opportunity is in deepening ${condName}.`;
+    s3 = plain
+      ? `Your week already gives you a fairly broad range. The next step is going deeper on ${condName}.`
+      : `Your current patterns provide a relatively broad neurochemical range. The remaining opportunity is in deepening ${condName}.`;
   }
 
   return `${s1} ${s2} ${s3}`;

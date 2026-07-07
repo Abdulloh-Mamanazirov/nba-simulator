@@ -1,6 +1,15 @@
 "use client";
 
 import { getChemical } from "@/lib/chemicals";
+import { useLanguage } from "@/lib/language";
+import {
+  getCopy,
+  chemPrimary,
+  chemSecondary,
+  chemDescription,
+  chemDetail,
+  conditionLabel,
+} from "@/lib/copy";
 
 interface ChemicalDetailPanelProps {
   chemicalId: string;
@@ -13,10 +22,13 @@ export default function ChemicalDetailPanel({
   score,
   onClose,
 }: ChemicalDetailPanelProps) {
+  const { mode } = useLanguage();
+  const copy = getCopy(mode);
   const chemical = getChemical(chemicalId);
   const isTriad = chemical.category === "triad";
   const isOverdriven = isTriad && score >= chemical.dangerThreshold;
   const isStarving = !isTriad && score < chemical.starvationThreshold;
+  const detail = chemDetail(chemical, mode);
 
   return (
     <div className="mt-4 animate-slide-in">
@@ -45,10 +57,10 @@ export default function ChemicalDetailPanel({
           />
           <div>
             <h3 className="text-sm font-bold" style={{ color: chemical.color }}>
-              {chemical.name}
+              {chemPrimary(chemical, mode)}
             </h3>
             <span className="text-xs text-[var(--text-muted)]">
-              {chemical.plainName}
+              {chemSecondary(chemical, mode)}
             </span>
           </div>
           <div className="ml-auto text-right">
@@ -91,25 +103,27 @@ export default function ChemicalDetailPanel({
               ${isStarving ? "bg-[var(--gold)]/15 text-[var(--gold)]" : ""}
             `}
           >
-            {isOverdriven ? "⚠ Overdriven" : "⚠ Below Starvation Threshold"}
+            {isOverdriven ? copy.statusOverdriven : copy.statusStarving}
           </div>
         )}
 
         {/* Description */}
         <p className="text-sm text-[var(--text)] leading-relaxed mb-3 font-serif">
-          {chemical.description}
+          {chemDescription(chemical, mode)}
         </p>
 
-        {/* Scientific detail */}
-        <p className="text-xs text-[var(--text-muted)] leading-relaxed font-serif italic">
-          {chemical.scientificDetail}
-        </p>
+        {/* Scientific detail — hidden in plain mode */}
+        {detail && (
+          <p className="text-xs text-[var(--text-muted)] leading-relaxed font-serif italic">
+            {detail}
+          </p>
+        )}
 
         {/* Conditions */}
         {chemical.conditions.length > 0 && (
           <div className="mt-3 pt-3 border-t border-[var(--border)]">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-dim)]">
-              Activating conditions:{" "}
+              {copy.activatingConditions}{" "}
             </span>
             {chemical.conditions.map((cond) => (
               <span
@@ -117,7 +131,7 @@ export default function ChemicalDetailPanel({
                 className="inline-block px-2 py-0.5 rounded text-[10px] font-medium
                            bg-[var(--bg-card-2)] text-[var(--text-muted)] mr-1"
               >
-                {cond.charAt(0).toUpperCase() + cond.slice(1)}
+                {conditionLabel(cond, mode)}
               </span>
             ))}
           </div>

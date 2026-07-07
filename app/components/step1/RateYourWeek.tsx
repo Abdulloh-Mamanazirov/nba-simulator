@@ -4,6 +4,8 @@ import { useState } from "react";
 import type { ActivityCategory } from "@/lib/activities";
 import { ACTIVITIES } from "@/lib/activities";
 import type { Ratings } from "@/lib/scoring";
+import { useLanguage } from "@/lib/language";
+import { getCopy, ratedLabel } from "@/lib/copy";
 import CategoryTabs from "./CategoryTabs";
 import ActivityCard from "./ActivityCard";
 
@@ -18,6 +20,8 @@ export default function RateYourWeek({
   onRatingChange,
   onNext,
 }: RateYourWeekProps) {
+  const { mode } = useLanguage();
+  const copy = getCopy(mode);
   const [category, setCategory] = useState<ActivityCategory | "all">("all");
 
   const filtered =
@@ -31,20 +35,42 @@ export default function RateYourWeek({
     <div className="animate-fade-up">
       {/* Hero */}
       <div className="mb-10 sm:mb-14 max-w-3xl font-serif">
-        <h2 className="text-2xl sm:text-4xl lg:text-[42px] font-bold text-[var(--text)] leading-[1.15] mb-1">
-          You run on 100+ neurochemical channels.
-        </h2>
-        <h2 className="text-2xl sm:text-4xl lg:text-[42px] font-bold text-[var(--text-muted)] leading-[1.15] mb-6">
-          Modern life activates approximately three.
-        </h2>
+        {mode === "plain" ? (
+          <>
+            <h2 className="text-2xl sm:text-4xl lg:text-[42px] font-bold text-[var(--text)] leading-[1.15] mb-1">
+              Your brain runs on dozens of feel-good chemicals.
+            </h2>
+            <h2 className="text-2xl sm:text-4xl lg:text-[42px] font-bold text-[var(--text-muted)] leading-[1.15] mb-6">
+              Everyday life keeps just three of them busy.
+            </h2>
 
-        <p className="text-sm sm:text-base text-[var(--text-muted)] leading-relaxed mb-2">
-          Late modernity overloads{" "}
-          <span className="font-semibold text-[var(--chem-dopamine)]">dopamine</span>,{" "}
-          <span className="font-semibold text-[var(--chem-cortisol)]">cortisol</span>, and{" "}
-          <span className="font-semibold text-[var(--chem-oxytocin)]">shallow oxytocin</span>{" "}
-          while degrading the conditions the remaining nine systems need to activate.
-        </p>
+            <p className="text-sm sm:text-base text-[var(--text-muted)] leading-relaxed mb-2">
+              Phones, stress, and constant busyness overwork your{" "}
+              <span className="font-semibold text-[var(--chem-dopamine)]">reward</span> and{" "}
+              <span className="font-semibold text-[var(--chem-cortisol)]">stress</span>{" "}
+              chemicals — while the nine that bring real calm, focus, and
+              connection barely switch on. Answer a few questions and let&apos;s
+              see where you stand.
+            </p>
+          </>
+        ) : (
+          <>
+            <h2 className="text-2xl sm:text-4xl lg:text-[42px] font-bold text-[var(--text)] leading-[1.15] mb-1">
+              You run on 100+ neurochemical channels.
+            </h2>
+            <h2 className="text-2xl sm:text-4xl lg:text-[42px] font-bold text-[var(--text-muted)] leading-[1.15] mb-6">
+              Modern life activates approximately three.
+            </h2>
+
+            <p className="text-sm sm:text-base text-[var(--text-muted)] leading-relaxed mb-2">
+              Late modernity overloads{" "}
+              <span className="font-semibold text-[var(--chem-dopamine)]">dopamine</span>,{" "}
+              <span className="font-semibold text-[var(--chem-cortisol)]">cortisol</span>, and{" "}
+              <span className="font-semibold text-[var(--chem-oxytocin)]">shallow oxytocin</span>{" "}
+              while degrading the conditions the remaining nine systems need to activate.
+            </p>
+          </>
+        )}
       </div>
 
       {/* Category filter */}
@@ -75,7 +101,7 @@ export default function RateYourWeek({
       {/* CTA Button */}
       <div className="flex flex-col items-center gap-3 pt-4 pb-8">
         <span className="text-xs text-[var(--text-muted)]">
-          {ratedCount} / {ACTIVITIES.length} activities rated
+          {ratedLabel(ratedCount, ACTIVITIES.length, mode)}
         </span>
         <button
           onClick={onNext}
@@ -91,7 +117,7 @@ export default function RateYourWeek({
           `}
           disabled={ratedCount === 0}
         >
-          Calculate My Range →
+          {copy.ctaCalculate}
         </button>
       </div>
     </div>
