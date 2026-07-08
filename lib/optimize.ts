@@ -170,5 +170,7 @@ Return JSON only:
 - boosts: array of system ids this upgrade lifts (only ids from the list).
 - dampens: array of OVERWORKED system ids it cools (only ids from the list), or empty.
 
-If the action is unsafe, impossible, or not a real action, set optimizedAction to a brief note saying so and return empty steps/boosts. Use ONLY the exact ids listed above in every id field.`;
+Use simple words in your response, avoid fancy vocabulary.
+
+If the action is unsafe, totally harmful, impossible, or not a real action, set optimizedAction to a brief note saying so and return empty steps/boosts. Use ONLY the exact ids listed above in every id field.`;
 }
